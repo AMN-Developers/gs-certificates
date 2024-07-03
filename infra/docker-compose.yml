@@ -1,0 +1,22 @@
+services:
+  db:
+    image: mariadb:10.6.18
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: local
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8080:80"

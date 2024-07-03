@@ -1,30 +1,10 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Config` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Post` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Profile` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-DROP TABLE `Config`;
-
--- DropTable
-DROP TABLE `Post`;
-
--- DropTable
-DROP TABLE `Profile`;
-
--- DropTable
-DROP TABLE `User`;
-
 -- CreateTable
 CREATE TABLE `user` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `email` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
+    `test` VARCHAR(191) NULL,
     `role` ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,

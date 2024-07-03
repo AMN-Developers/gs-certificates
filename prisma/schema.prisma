@@ -19,7 +19,6 @@ model User {
   email     String   @unique
   name      String
   password  String
-  teste     String?
   role      Role     @default(USER)
   orders    Order[]
   createdAt DateTime @default(now())
@@ -36,13 +35,13 @@ enum Role {
 }
 
 model Order {
-  id        Int              @id
-  user_id   Int?
-  user      User?            @relation(fields: [user_id], references: [id])
-  claimed   Boolean          @default(false)
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  orderItem ProductInOrder[]
+  id          Int              @id
+  user_id     Int?
+  user        User?            @relation(fields: [user_id], references: [id])
+  claimed     Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  order_items ProductInOrder[]
 
   @@map("order")
 }
