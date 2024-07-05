@@ -1,39 +1,30 @@
-import prisma from '@/utils/prisma/client';
-import { ProductInOrder } from '@prisma/client';
-
-interface ICreateOrder {
-  id: number;
-  order_items: OrderItem[];
-}
-
-type OrderItem = Pick<ProductInOrder, 'order_id' | 'quantity' | 'product_id'>;
+import { OrderDTO } from '@/dtos/order';
+import { OrdersRepository } from '@/repositories/ordersRepository';
+import { orderInputSchema } from '@/app/_lib/validation-shemas/order';
 
 export async function POST(req: Request) {
-  const requestBody: ICreateOrder = await req.json();
+  const requestBody = await req.json();
+  const { data, error } = orderInputSchema.safeParse(requestBody);
 
-  const order = await prisma.order.create({
-    data: {
-      id: requestBody.id,
-      order_items: {
-        connectOrCreate: [
-          ...requestBody.order_items.map((orderItem) => {
-            return {
-              where: {
-                order_id_product_id: {
-                  order_id: requestBody.id,
-                  product_id: orderItem.product_id,
-                },
-              },
-              create: {
-                product_id: orderItem.product_id,
-                quantity: orderItem.quantity,
-              },
-            };
-          }),
-        ],
+  if (error) {
+    return new Response(error.message, {
+      status: 400,
+    });
+  }
+
+  try {
+    const ordersRepository = new OrdersRepository();
+    await ordersRepository.createOrder(new OrderDTO(data.id, data.order_items));
+  } catch (error) {
+    return new Response(
+      `Failed to create order ${error instanceof Error ? error.message : ''}`,
+      {
+        status: 500,
       },
-    },
-  });
+    );
+  }
 
-  return Response.json({ message: 'Order created', order });
+  return new Response('Order created successfully', {
+    status: 201,
+  });
 }
