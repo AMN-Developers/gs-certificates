@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import prisma from '@/lib/prisma/client';
 import { OrderDTO } from '@/dtos/order';
-import { IOrdersRepository } from '.';
+import { IOrdersRepository } from '@/repositories';
 
 export class OrdersRepository implements IOrdersRepository {
   private db: PrismaClient;
