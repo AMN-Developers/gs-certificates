@@ -2,6 +2,7 @@
 
 import { z } from 'zod';
 import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale/pt-BR';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon } from 'lucide-react';
@@ -58,7 +59,7 @@ export default function CreateCertificateForm() {
           control={form.control}
           name="date"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col gap-2">
               <FormLabel>Data:</FormLabel>
               <FormControl>
                 <Popover>
@@ -72,9 +73,16 @@ export default function CreateCertificateForm() {
                         )}
                       >
                         {field.value ? (
-                          format(field.value, 'PPP')
+                          // Show date in the form "1 de janeiro de 2022"
+                          format(
+                            new Date(field.value),
+                            "d 'de' MMMM 'de' yyyy",
+                            {
+                              locale: ptBR,
+                            },
+                          )
                         ) : (
-                          <span>Pick a date</span>
+                          <span>Escolha uma data</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
@@ -85,9 +93,6 @@ export default function CreateCertificateForm() {
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date('1900-01-01')
-                      }
                       initialFocus
                     />
                   </PopoverContent>
