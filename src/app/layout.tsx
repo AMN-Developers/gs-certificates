@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
+import { cn } from '@lib/utils/cn';
 import Header from '@components/organisms/Header';
 import './globals.css';
 
-const montserrat = Montserrat({ subsets: ['latin'] });
+const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
   title: 'Certificados | G&S Home Soltions',
@@ -18,9 +19,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={montserrat.className}>
+      <body
+        className={cn(
+          'flex h-dvh flex-col font-sans antialiased',
+          montserrat.variable,
+        )}
+      >
         <Header />
-        <main>{children}</main>
+        <main className="h-full">{children}</main>
       </body>
     </html>
   );
