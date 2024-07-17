@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
-import { cn } from '@lib/utils/cn';
 import Header from '@components/organisms/Header';
+import { cn } from '@lib/utils';
 import './globals.css';
 
 const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-sans' });
