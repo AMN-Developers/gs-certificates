@@ -39,6 +39,9 @@ const config = {
       colors: {
         brand: '#375893',
       },
+      backgroundImage: {
+        'pattern-waves': 'url("/bg-pattern.png")',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],

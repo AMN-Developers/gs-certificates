@@ -23,6 +23,7 @@ import {
 import { Calendar } from '@components/ui/calendar';
 import { createCertificateSchema } from '@lib/validation-shemas/create-certificate';
 import { cn } from '@lib/utils';
+import { createCertificate } from '@/app/certificados/novo/action';
 
 export default function CreateCertificateForm() {
   const form = useForm<z.infer<typeof createCertificateSchema>>({
@@ -32,24 +33,28 @@ export default function CreateCertificateForm() {
 
   const onSubmit = async (values: z.infer<typeof createCertificateSchema>) => {
     // TODO: Implement submit logic
-
-    console.log(values);
+    const response = await createCertificate(values);
+    console.log(response);
+    form.reset();
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="max-w-screen-sm space-y-2"
+      >
         <FormField
           control={form.control}
           name="clientName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome da mesa:</FormLabel>
+              <FormLabel>Nome do cliente:</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="text"
-                  placeholder="Digite o nome da sua mesa..."
+                  placeholder="Digite o nome do cliente..."
                 />
               </FormControl>
             </FormItem>
@@ -59,7 +64,7 @@ export default function CreateCertificateForm() {
           control={form.control}
           name="date"
           render={({ field }) => (
-            <FormItem className="flex flex-col gap-2">
+            <FormItem className="flex flex-col gap-1">
               <FormLabel>Data:</FormLabel>
               <FormControl>
                 <Popover>
@@ -133,6 +138,11 @@ export default function CreateCertificateForm() {
             </FormItem>
           )}
         />
+        <FormItem>
+          <Button type="submit" disabled={!form.formState.isValid}>
+            Emitir certificado
+          </Button>
+        </FormItem>
       </form>
     </Form>
   );

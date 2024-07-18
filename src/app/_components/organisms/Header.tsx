@@ -12,6 +12,7 @@ export default function Header() {
             alt="G&S Home Solutions Image Logo"
             className="max-w-[6.25rem]"
             draggable={false}
+            priority
           />
         </Link>
       </div>

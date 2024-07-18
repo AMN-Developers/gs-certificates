@@ -26,7 +26,9 @@ export default function RootLayout({
         )}
       >
         <Header />
-        <main className="h-full">{children}</main>
+        <main className="bg-pattern-waves h-full bg-cover bg-center bg-no-repeat">
+          {children}
+        </main>
       </body>
     </html>
   );
