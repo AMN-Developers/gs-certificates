@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useServerAction } from 'zsa-react';
 import { CalendarIcon } from 'lucide-react';
 import {
   Form,
@@ -21,8 +22,8 @@ import {
   PopoverContent,
 } from '@components/ui/popover';
 import { Calendar } from '@components/ui/calendar';
-import { createCertificateSchema } from '@lib/validation-shemas/create-certificate';
 import { cn } from '@lib/utils';
+import { createCertificateSchema } from '@lib/validation-shemas/create-certificate';
 import { createCertificate } from '@/app/certificados/novo/action';
 
 export default function CreateCertificateForm() {
@@ -31,17 +32,22 @@ export default function CreateCertificateForm() {
     resolver: zodResolver(createCertificateSchema),
   });
 
-  const onSubmit = async (values: z.infer<typeof createCertificateSchema>) => {
-    // TODO: Implement submit logic
-    const response = await createCertificate(values);
-    console.log(response);
-    form.reset();
-  };
+  //TODO: On success, redirect to the certificate page with the new certificate id as a query param, so the user can download the certificate.
+  const { execute } = useServerAction(createCertificate, {
+    onError: ({ err }) => {
+      console.error(err);
+    },
+    onSuccess: ({ data }) => {
+      console.log(data);
+    },
+  });
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit((values) => {
+          execute(values);
+        })}
         className="max-w-screen-sm space-y-2"
       >
         <FormField
@@ -78,7 +84,6 @@ export default function CreateCertificateForm() {
                         )}
                       >
                         {field.value ? (
-                          // Show date in the form "1 de janeiro de 2022"
                           format(
                             new Date(field.value),
                             "d 'de' MMMM 'de' yyyy",
