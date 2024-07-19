@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
-import { createServerAction } from 'zsa';
+import { authenticatedProcedure } from '@/lib/zsa-procedures';
 import { z } from 'zod';
 import { createCertificateSchema } from '@lib/validation-shemas/create-certificate';
 import { CertificatesService } from '@/services/certificatesService';
 
-export const createCertificate = createServerAction()
+export const createCertificate = authenticatedProcedure
+  .createServerAction()
   .input(createCertificateSchema)
   .output(
     z.object({
@@ -14,20 +15,18 @@ export const createCertificate = createServerAction()
       certificateToken: z.string().optional(),
     }),
   )
-  .handler(async ({ input }) => {
-    try {
-      const certificateService = new CertificatesService();
-      const certificate = await certificateService.createCertificate(input);
+  .handler(async ({ input, ctx }) => {
+    const { userId } = ctx;
 
-      return {
-        message: 'Certificate created successfully',
-        certificateToken: certificate.certificateToken,
-      };
-    } catch (error: any) {
-      console.log('error', error);
-      return {
-        message: 'Error creating certificate',
-        error: error.message,
-      };
+    if (!userId) {
+      throw new Error('Não autorizado!');
     }
+
+    const certificateService = new CertificatesService();
+    const certificate = await certificateService.createCertificate(input);
+
+    return {
+      message: 'Certificado criado com sucesso!',
+      certificateToken: certificate.certificateToken,
+    };
   });

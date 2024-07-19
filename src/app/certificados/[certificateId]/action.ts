@@ -12,19 +12,13 @@ export const retrieveCertificateById = createServerAction()
     }),
   )
   .handler(async ({ input }) => {
-    try {
-      const certificateService = new CertificatesService();
-      const certificate = await certificateService.retrieveCertificateById(
-        input.certificateId,
-      );
-      return {
-        message: 'Certificate retrieved successfully',
-        certificate,
-      };
-    } catch (error: any) {
-      return {
-        message: 'Error retrieving certificate',
-        error: error.message,
-      };
-    }
+    const certificateService = new CertificatesService();
+    const certificate = await certificateService.retrieveCertificateById(
+      input.certificateId,
+    );
+
+    return {
+      message: 'Certificate retrieved successfully',
+      certificate,
+    };
   });

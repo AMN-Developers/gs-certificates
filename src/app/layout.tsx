@@ -25,6 +25,7 @@ export default function RootLayout({
           'flex h-dvh flex-col font-sans antialiased',
           montserrat.variable,
         )}
+        suppressHydrationWarning
       >
         <Header />
         <main className="h-full bg-pattern-waves bg-cover bg-center bg-no-repeat">
