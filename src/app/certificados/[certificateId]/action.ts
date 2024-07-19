@@ -11,27 +11,12 @@ export const retrieveCertificateById = createServerAction()
       certificateId: z.string(),
     }),
   )
-  .output(
-    z.object({
-      message: z.string(),
-      certificate: z
-        .object({
-          id: z.string().optional(),
-          clientName: z.string(),
-          date: z.string(),
-          companyName: z.string(),
-          technichalResponsible: z.string(),
-        })
-        .optional(),
-    }),
-  )
   .handler(async ({ input }) => {
     try {
       const certificateService = new CertificatesService();
       const certificate = await certificateService.retrieveCertificateById(
         input.certificateId,
       );
-
       return {
         message: 'Certificate retrieved successfully',
         certificate,

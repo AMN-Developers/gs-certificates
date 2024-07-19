@@ -48,7 +48,7 @@ export default function CreateCertificateForm() {
         title: 'Certificado criado com sucesso',
         description: `O certificado foi criado com sucesso!`,
       });
-      router.push(`/certificados/${data.certificate?.id}`);
+      router.push(`/certificados/${data.certificateToken}`);
     },
   });
 

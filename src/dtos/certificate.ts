@@ -1,21 +1,35 @@
 export class CertificateDTO {
-  private _certificate_token: string;
-  private _id: string | undefined;
+  private _tokenHash: string;
+  private _encryptedData: string;
+  private _issuedAt: Date;
 
-  constructor(certificate_token: string, id?: string) {
-    this._id = id;
-    this._certificate_token = certificate_token;
+  constructor(tokenHash: string, encryptedData: string, issuedAt: Date) {
+    this._tokenHash = tokenHash;
+    this._encryptedData = encryptedData;
+    this._issuedAt = issuedAt;
   }
 
-  get certificate_token() {
-    return this._certificate_token;
+  get tokenHash() {
+    return this._tokenHash;
   }
 
-  get id() {
-    return this._id;
+  get encryptedData() {
+    return this._encryptedData;
   }
 
-  static fromDb(data: { certificate_token: string; id: string }) {
-    return new CertificateDTO(data.certificate_token, data.id);
+  get issuedAt() {
+    return this._issuedAt;
+  }
+
+  static fromDb(data: {
+    tokenHash: string;
+    encryptedData: string;
+    issuedAt: Date;
+  }) {
+    return new CertificateDTO(
+      data.tokenHash,
+      data.encryptedData,
+      data.issuedAt,
+    );
   }
 }

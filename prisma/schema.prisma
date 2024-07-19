@@ -67,10 +67,11 @@ model Product {
 }
 
 model Certificate {
-  id                String @id @default(uuid())
-  user_id           Int
-  user              User   @relation(fields: [user_id], references: [id])
-  certificate_token String @db.VarChar(1000)
+  tokenHash     String   @id @db.VarChar(64)
+  encryptedData String   @db.VarChar(1000)
+  issuedAt      DateTime
+  user_id       Int
+  user          User     @relation(fields: [user_id], references: [id])
 
   @@map("certificate")
 }

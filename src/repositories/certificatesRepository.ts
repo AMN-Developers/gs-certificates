@@ -11,12 +11,14 @@ export class CertificatesRepository implements ICertificatesRepository {
   }
 
   async createCertificate(certificate: CertificateDTO) {
-    const { certificate_token } = certificate;
+    const { tokenHash, encryptedData, issuedAt } = certificate;
 
     //TODO: In the future, this should be connected to the user that is creating the certificate
     const newCertificate = await this.db.certificate.create({
       data: {
-        certificate_token,
+        tokenHash,
+        encryptedData,
+        issuedAt,
         user: {
           connect: {
             id: 1,
@@ -24,8 +26,9 @@ export class CertificatesRepository implements ICertificatesRepository {
         },
       },
       select: {
-        id: true,
-        certificate_token: true,
+        tokenHash: true,
+        encryptedData: true,
+        issuedAt: true,
       },
     });
 
@@ -33,16 +36,13 @@ export class CertificatesRepository implements ICertificatesRepository {
       throw new Error('Certificate not created');
     }
 
-    return CertificateDTO.fromDb({
-      certificate_token: newCertificate.certificate_token,
-      id: newCertificate.id,
-    });
+    return CertificateDTO.fromDb(newCertificate);
   }
 
-  async retrieveCertificateById(id: string) {
+  async retrieveCertificateById(tokenHash: string) {
     const certificate = await this.db.certificate.findUnique({
       where: {
-        id,
+        tokenHash,
       },
     });
 
@@ -51,8 +51,9 @@ export class CertificatesRepository implements ICertificatesRepository {
     }
 
     return CertificateDTO.fromDb({
-      certificate_token: certificate.certificate_token,
-      id: certificate.id,
+      tokenHash: certificate.tokenHash,
+      encryptedData: certificate.encryptedData,
+      issuedAt: certificate.issuedAt,
     });
   }
 }

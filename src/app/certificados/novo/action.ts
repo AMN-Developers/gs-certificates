@@ -11,12 +11,7 @@ export const createCertificate = createServerAction()
   .output(
     z.object({
       message: z.string(),
-      certificate: z
-        .object({
-          id: z.string().optional(),
-          certificate_token: z.string(),
-        })
-        .optional(),
+      certificateToken: z.string().optional(),
     }),
   )
   .handler(async ({ input }) => {
@@ -26,12 +21,10 @@ export const createCertificate = createServerAction()
 
       return {
         message: 'Certificate created successfully',
-        certificate: {
-          id: certificate.id,
-          certificate_token: certificate.certificate_token,
-        },
+        certificateToken: certificate.certificateToken,
       };
     } catch (error: any) {
+      console.log('error', error);
       return {
         message: 'Error creating certificate',
         error: error.message,
