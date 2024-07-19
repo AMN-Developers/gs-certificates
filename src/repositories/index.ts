@@ -8,4 +8,5 @@ export interface IOrdersRepository {
 
 export interface ICertificatesRepository {
   createCertificate(certificate: CertificateDTO): Promise<CertificateDTO>;
+  retrieveCertificateById(certificateId: string): Promise<CertificateDTO>;
 }

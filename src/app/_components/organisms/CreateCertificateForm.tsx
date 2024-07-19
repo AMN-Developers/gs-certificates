@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
@@ -22,23 +23,32 @@ import {
   PopoverContent,
 } from '@components/ui/popover';
 import { Calendar } from '@components/ui/calendar';
+import { useToast } from '@components/ui/use-toast';
 import { cn } from '@lib/utils';
 import { createCertificateSchema } from '@lib/validation-shemas/create-certificate';
 import { createCertificate } from '@/app/certificados/novo/action';
 
 export default function CreateCertificateForm() {
+  const router = useRouter();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof createCertificateSchema>>({
     mode: 'onChange',
     resolver: zodResolver(createCertificateSchema),
   });
 
-  //TODO: On success, redirect to the certificate page with the new certificate id as a query param, so the user can download the certificate.
   const { execute } = useServerAction(createCertificate, {
     onError: ({ err }) => {
-      console.error(err);
+      toast({
+        title: 'Erro ao criar certificado',
+        description: err.message,
+      });
     },
     onSuccess: ({ data }) => {
-      console.log(data);
+      toast({
+        title: 'Certificado criado com sucesso',
+        description: `O certificado foi criado com sucesso!`,
+      });
+      router.push(`/certificados/${data.certificate?.id}`);
     },
   });
 

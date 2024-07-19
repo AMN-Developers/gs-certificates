@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import Header from '@components/organisms/Header';
+import { Toaster } from '@components/ui/toaster';
 import { cn } from '@lib/utils';
 import './globals.css';
 
@@ -26,9 +27,10 @@ export default function RootLayout({
         )}
       >
         <Header />
-        <main className="bg-pattern-waves h-full bg-cover bg-center bg-no-repeat">
+        <main className="h-full bg-pattern-waves bg-cover bg-center bg-no-repeat">
           {children}
         </main>
+        <Toaster />
       </body>
     </html>
   );

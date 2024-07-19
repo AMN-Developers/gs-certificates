@@ -13,6 +13,7 @@ export default function Header() {
             className="max-w-[6.25rem]"
             draggable={false}
             priority
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
           />
         </Link>
       </div>

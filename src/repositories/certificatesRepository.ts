@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import prisma from '@/lib/prisma/client';
-import { ICertificatesRepository } from '.';
 import { CertificateDTO } from '@/dtos/certificate';
+import { ICertificatesRepository } from '.';
 
 export class CertificatesRepository implements ICertificatesRepository {
   private db: PrismaClient;
@@ -9,6 +9,7 @@ export class CertificatesRepository implements ICertificatesRepository {
   constructor() {
     this.db = prisma;
   }
+
   async createCertificate(certificate: CertificateDTO) {
     const { certificate_token } = certificate;
 
@@ -35,6 +36,23 @@ export class CertificatesRepository implements ICertificatesRepository {
     return CertificateDTO.fromDb({
       certificate_token: newCertificate.certificate_token,
       id: newCertificate.id,
+    });
+  }
+
+  async retrieveCertificateById(id: string) {
+    const certificate = await this.db.certificate.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!certificate) {
+      throw new Error('Certificate not found');
+    }
+
+    return CertificateDTO.fromDb({
+      certificate_token: certificate.certificate_token,
+      id: certificate.id,
     });
   }
 }

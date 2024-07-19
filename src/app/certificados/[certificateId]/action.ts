@@ -3,18 +3,24 @@
 
 import { createServerAction } from 'zsa';
 import { z } from 'zod';
-import { createCertificateSchema } from '@lib/validation-shemas/create-certificate';
 import { CertificatesService } from '@/services/certificatesService';
 
-export const createCertificate = createServerAction()
-  .input(createCertificateSchema)
+export const retrieveCertificateById = createServerAction()
+  .input(
+    z.object({
+      certificateId: z.string(),
+    }),
+  )
   .output(
     z.object({
       message: z.string(),
       certificate: z
         .object({
           id: z.string().optional(),
-          certificate_token: z.string(),
+          clientName: z.string(),
+          date: z.string(),
+          companyName: z.string(),
+          technichalResponsible: z.string(),
         })
         .optional(),
     }),
@@ -22,18 +28,17 @@ export const createCertificate = createServerAction()
   .handler(async ({ input }) => {
     try {
       const certificateService = new CertificatesService();
-      const certificate = await certificateService.createCertificate(input);
+      const certificate = await certificateService.retrieveCertificateById(
+        input.certificateId,
+      );
 
       return {
-        message: 'Certificate created successfully',
-        certificate: {
-          id: certificate.id,
-          certificate_token: certificate.certificate_token,
-        },
+        message: 'Certificate retrieved successfully',
+        certificate,
       };
     } catch (error: any) {
       return {
-        message: 'Error creating certificate',
+        message: 'Error retrieving certificate',
         error: error.message,
       };
     }
