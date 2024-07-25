@@ -3,6 +3,7 @@ import { Montserrat } from 'next/font/google';
 import Header from '@components/organisms/Header';
 import { Toaster } from '@components/ui/toaster';
 import { cn } from '@lib/utils';
+import ReactQueryProvider from '@components/providers/react-query';
 import './globals.css';
 
 const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-sans' });
@@ -27,11 +28,13 @@ export default function RootLayout({
         )}
         suppressHydrationWarning
       >
-        <Header />
-        <main className="h-full bg-pattern-waves bg-cover bg-center bg-no-repeat">
-          {children}
-        </main>
-        <Toaster />
+        <ReactQueryProvider>
+          <Header />
+          <main className="h-full bg-pattern-waves bg-cover bg-center bg-no-repeat">
+            {children}
+          </main>
+          <Toaster />
+        </ReactQueryProvider>
       </body>
     </html>
   );

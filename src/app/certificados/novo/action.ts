@@ -23,7 +23,10 @@ export const createCertificate = authenticatedProcedure
     }
 
     const certificateService = new CertificatesService();
-    const certificate = await certificateService.createCertificate(input);
+    const certificate = await certificateService.createCertificate({
+      ...input,
+      userId,
+    });
 
     return {
       message: 'Certificado criado com sucesso!',

@@ -15,36 +15,24 @@ datasource db {
 }
 
 model User {
-  id                Int                @id
-  certificateTokens CertificateToken[]
-  certificates      Certificate[]
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+  id                 Int               @id
+  certificateTokenId Int               @unique
+  certificateTokens  CertificateTokens @relation(fields: [certificateTokenId], references: [id])
+  certificates       Certificate[]
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
 
   @@map("user")
 }
 
-enum CertificateTokenType {
-  HIGIENIZACAO
-}
+model CertificateTokens {
+  id           Int      @id @default(autoincrement())
+  user         User?
+  higienizacao Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-enum Role {
-  USER
-  ADMIN
-
-  @@map("roles")
-}
-
-model CertificateToken {
-  id        Int                  @id @default(autoincrement())
-  user_id   Int?
-  user      User?                @relation(fields: [user_id], references: [id])
-  type      CertificateTokenType
-  quantity  Int
-  createdAt DateTime             @default(now())
-  updatedAt DateTime             @updatedAt
-
-  @@map("order")
+  @@map("certificate_tokens")
 }
 
 model Certificate {

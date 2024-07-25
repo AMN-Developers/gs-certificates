@@ -14,4 +14,12 @@ export interface ICertificatesRepository {
 
 export interface IUsersRepository {
   retrieveUserById(userData: UserDTO): Promise<UserDTO>;
+  createUser(userData: {
+    userId: number;
+    certificateTokens: { [key: string]: number };
+  }): Promise<UserDTO>;
+  updateTokenQuantity(userData: {
+    userId: number;
+    certificateTokens: { [key: string]: number };
+  }): Promise<UserDTO>;
 }

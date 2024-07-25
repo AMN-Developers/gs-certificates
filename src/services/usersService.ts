@@ -24,7 +24,6 @@ export class UsersService {
         userId: userFromDb.userId,
       },
       env.JWT_SECRET,
-      { expiresIn: '1h' },
     );
 
     return token;
@@ -32,7 +31,7 @@ export class UsersService {
 
   async verifyToken(token: string) {
     const decoded = jwt.verify(token, env.JWT_SECRET) as { userId: number };
-
+    console.log('decoded', decoded);
     if (!decoded) {
       throw new Error('Invalid token');
     }
@@ -42,5 +41,9 @@ export class UsersService {
     );
 
     return user;
+  }
+
+  async createUser() {
+    // TODO: Implement this method
   }
 }

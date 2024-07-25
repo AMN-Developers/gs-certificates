@@ -14,7 +14,7 @@ export const authenticatedProcedure = createServerActionProcedure().handler(
     const userService = new UsersService();
 
     const user = await userService.verifyToken(token);
-
+    console.log('user', user);
     if (!user) {
       redirect('/');
     }

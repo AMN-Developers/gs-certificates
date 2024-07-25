@@ -45,7 +45,7 @@ export default function Home() {
   });
 
   return (
-    <section className="mx-auto flex h-full max-w-screen-xl gap-4 px-4 py-4 lg:px-0">
+    <section className="mx-auto flex h-full max-w-screen-xl gap-4 px-4 py-4 xl:px-0">
       <div className="hidden min-h-full w-1/2 bg-slate-400 md:flex">
         <div className="h-full w-full bg-brand p-4" />
       </div>

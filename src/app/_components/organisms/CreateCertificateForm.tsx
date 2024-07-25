@@ -7,6 +7,7 @@ import { ptBR } from 'date-fns/locale/pt-BR';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useServerAction } from 'zsa-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { CalendarIcon } from 'lucide-react';
 import {
   Form,
@@ -30,6 +31,7 @@ import { createCertificate } from '@/app/certificados/novo/action';
 
 export default function CreateCertificateForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof createCertificateSchema>>({
     mode: 'onChange',
@@ -44,6 +46,7 @@ export default function CreateCertificateForm() {
       });
     },
     onSuccess: ({ data }) => {
+      queryClient.invalidateQueries({ queryKey: ['getUser'] });
       toast({
         title: 'Certificado criado com sucesso',
         description: `O certificado foi criado com sucesso!`,

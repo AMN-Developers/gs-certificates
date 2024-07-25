@@ -11,9 +11,12 @@ export class CertificatesRepository implements ICertificatesRepository {
   }
 
   async createCertificate(certificate: CertificateDTO) {
-    const { tokenHash, encryptedData, issuedAt } = certificate;
+    const { tokenHash, encryptedData, issuedAt, userId } = certificate;
 
-    //TODO: In the future, this should be connected to the user that is creating the certificate
+    if (!tokenHash || !encryptedData || !issuedAt || !userId) {
+      throw new Error('Invalid certificate data');
+    }
+
     const newCertificate = await this.db.certificate.create({
       data: {
         tokenHash,
@@ -21,7 +24,7 @@ export class CertificatesRepository implements ICertificatesRepository {
         issuedAt,
         user: {
           connect: {
-            id: 1,
+            id: userId,
           },
         },
       },

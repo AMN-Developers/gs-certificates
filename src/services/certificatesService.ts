@@ -1,6 +1,8 @@
 import { CertificateDTO } from '@/dtos/certificate';
-import { ICertificatesRepository } from '@/repositories';
+import { UserDTO } from '@/dtos/user';
+import { ICertificatesRepository, IUsersRepository } from '@/repositories';
 import { CertificatesRepository } from '@/repositories/certificatesRepository';
+import { UsersRepository } from '@/repositories/userRepository';
 import {
   decrypt,
   encrypt,
@@ -11,9 +13,11 @@ import { env } from '@/utils/env';
 
 export class CertificatesService {
   private _certificatesRepository: ICertificatesRepository;
+  private _usersRepository: IUsersRepository;
 
   constructor() {
     this._certificatesRepository = new CertificatesRepository();
+    this._usersRepository = new UsersRepository();
   }
 
   async createCertificate(certificate: {
@@ -21,7 +25,29 @@ export class CertificatesService {
     date: Date;
     companyName: string;
     technichalResponsible: string;
+    userId: number;
   }) {
+    const user = await this._usersRepository.retrieveUserById(
+      new UserDTO(certificate.userId),
+    );
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const certificateTokenQuantity = user.certificateTokens?.higienizacao;
+
+    if (!certificateTokenQuantity || certificateTokenQuantity < 1) {
+      throw new Error('User does not have enough tokens');
+    }
+
+    await this._usersRepository.updateTokenQuantity({
+      userId: certificate.userId,
+      certificateTokens: {
+        higienizacao: certificateTokenQuantity - 1,
+      },
+    });
+
     const encryptCertificateData = encrypt(
       JSON.stringify(certificate),
       env.JWT_SECRET,
@@ -36,6 +62,7 @@ export class CertificatesService {
         encryptedTokenHash,
         encryptCertificateData,
         certificate.date,
+        user.userId,
       ),
     );
 
