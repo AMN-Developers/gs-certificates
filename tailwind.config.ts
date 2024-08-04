@@ -41,6 +41,7 @@ const config = {
       },
       backgroundImage: {
         'pattern-waves': 'url("/bg-pattern.png")',
+        'shades-wave': 'url("/bg-shades.png")',
       },
     },
   },

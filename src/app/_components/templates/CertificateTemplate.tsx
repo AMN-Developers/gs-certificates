@@ -4,7 +4,9 @@ import Image from 'next/image';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { Button } from '@components/ui/button';
-import logo from '@assets/logoBlack.png';
+import logo from '@assets/logo.png';
+import selo from '@assets/selo.png';
+import astm from '@assets/astm.png';
 
 type TCertificateTemplateProps = {
   certificate: {
@@ -92,57 +94,172 @@ export default function CertificateTemplate({
       </p>
       <section
         ref={certificateRef}
-        className="flex flex-col gap-4 border-[6px] border-blue-950 bg-pattern-waves bg-cover bg-center bg-no-repeat px-14 py-8"
+        className="flex w-full flex-col gap-4 rounded-md bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] px-4 py-2 text-white lg:w-2/3"
       >
         <div className="flex flex-col">
-          <div className="flex">
+          <div className="mb-4 flex flex-col items-center gap-4">
             <Image
               src={logo}
               alt="G&S Home Solutions Image Logo"
-              className="max-w-[6.25rem]"
+              className="w-[4rem] max-w-[6.25rem] sm:w-[5rem]"
               draggable={false}
               priority
               sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
             />
-            <div className="my-auto flex w-full justify-center text-center text-2xl font-semibold">
+            <div className="my-auto flex w-full justify-center text-center text-lg font-extrabold sm:text-xl md:text-2xl">
               <h1 className="text-center">
                 Certificado de Garantia de Higienização
               </h1>
             </div>
           </div>
-          <div className="flex flex-col gap-4 pt-8 text-lg font-semibold">
-            <p>
-              Certificamos que a superfície foi higienizada com o Power Trio da
-              G&S Home Solutions. Esta higienização garante que a superfície
-              têxtil esteja livres de bactérias, conforme testes realizados
-              seguindo a normas têxteis internacionais método ASTM E2419-13.
+          <div className="flex flex-row gap-4">
+            <div className="mt-2 flex w-1/2 flex-col gap-2 text-justify text-[8px] font-semibold sm:text-lg">
+              <p>
+                Certificamos que a superfície foi higienizada com o Power Trio
+                da G&S Home Solutions.
+              </p>
+              <p>
+                Esta higienização garante que a superfície têxtil esteja livres
+                de bactérias, conforme testes realizados seguindo a normas
+                têxteis internacionais método ASTM E2419-13.
+              </p>
+              <p>
+                Todos os produtos componentes do Power Trio G&S, que são eles:
+                Lótus All-01 , Lótus Tira-Manchas e Lótus Pré-Imper, são
+                produtos notificados pela ANVISA, garantindo a sua segurança e
+                conformidade quanto a sua função.
+              </p>
+              <Image
+                src={astm}
+                alt="qr Code"
+                className="mt-4 w-[4.25rem] max-w-[6.25rem] self-center sm:w-[6rem]"
+                draggable={false}
+                priority
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
+              />
+            </div>
+            <div className="mt-2 flex h-fit w-1/2 flex-col gap-4 rounded-lg bg-shades-wave bg-cover bg-no-repeat px-4 py-2 text-justify text-[8px] font-semibold sm:text-lg">
+              <p>
+                Certificamos também, que os produtos são homologados pela SVB
+                (Sociedade Vegana Brasileira). Cuidamos da saúde do seu lar, sem
+                agredir o meio ambiente e respeitando a vida dos animais.
+              </p>
+              <div className="flex flex-col items-center justify-center gap-2">
+                <Image
+                  src={selo}
+                  alt="Selo vegano"
+                  className="w-[3rem] max-w-[6.25rem] sm:w-[6rem]"
+                  draggable={false}
+                  priority
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
+                />
+                <p className="px-4 py-2 text-center text-[5px] italic sm:text-xs">
+                  Esta é uma parcela de cuidado com o nosso planeta que você nos
+                  ajudou a garantir, juntos iremos transformar o mundo em um
+                  lugar mais limpo e sustentável.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="mt-10 flex py-2">
+          <div className="flex w-1/2 flex-col gap-2 text-[8px] font-semibold sm:text-xs">
+            <p className="w-full leading-none">Cliente: {clientName}</p>
+            <p className="w-full leading-none">
+              Data:{' '}
+              {new Date(date).toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+              })}
             </p>
-            <p>
-              Todos os produtos componentes do Power Trio G&S, que são eles :
-              Lótus All-01 , Lótus Tira-Manchas e Lótus Pré-Imper, são produtos
-              notificados pela ANVISA, garantindo a sua segurança e conformidade
-              quanto a sua função.
+            <p className="w-full leading-none">Empresa: {companyName}</p>
+            <p className="w-full leading-none">
+              Técnico Aplicador: {technichalResponsible}
             </p>
-            <p>
-              Certificamos também, que os produtos são homologados pela SVB
-              (Sociedade Vegana Brasileira). Cuidamos da saúde do seu lar, sem
-              agredir o meio ambiente e respeitando a vida dos animais.
-            </p>
-            <p>
-              Esta é uma parcela de cuidado com o nosso planeta que você nos
-              ajudou a garantir, juntos iremos transformar o mundo em um lugar
-              mais limpo e sustentável.
+          </div>
+          <div className="w flex w-1/2 flex-row items-end justify-end overflow-y-auto">
+            <p className="text-right text-[0.2rem] sm:text-[0.5rem]">
+              CERTIFICADO-{certificateNumber}
             </p>
           </div>
         </div>
-
-        <div className="flex flex-col items-end justify-between lg:flex-row">
-          <div className="flex w-full flex-row justify-between pt-14 text-lg lg:w-1/2">
-            <div className="w-full space-y-4 font-bold">
-              <p className="w-full bg-black/10 px-4 pb-4 leading-none">
-                Cliente: {clientName}
-              </p>
-              <p className="w-full bg-black/10 px-4 pb-4 leading-none">
+      </section>
+      {isModalOpen && (
+        <section
+          ref={certificateRef}
+          className="flex w-full flex-col gap-4 border-[6px] border-blue-950 bg-blue-600 bg-cover bg-center bg-no-repeat px-4 py-2 md:w-1/2"
+        >
+          <div className="flex flex-col">
+            <div className="flex flex-col items-center gap-4">
+              <Image
+                src={logo}
+                alt="G&S Home Solutions Image Logo"
+                className="size-[4.25rem] max-w-[6.25rem]"
+                draggable={false}
+                priority
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
+              />
+              <div className="my-auto flex w-full justify-center text-center text-lg font-bold">
+                <h1 className="text-center">
+                  Certificado de Garantia de Higienização
+                </h1>
+              </div>
+            </div>
+            <div className="flex flex-row gap-4">
+              <div className="mt-2 flex w-1/2 flex-col gap-2 text-justify text-[8px] font-semibold">
+                <p>
+                  Certificamos que a superfície foi higienizada com o Power Trio
+                  da G&S Home Solutions.
+                </p>
+                <p>
+                  Esta higienização garante que a superfície têxtil esteja
+                  livres de bactérias, conforme testes realizados seguindo a
+                  normas têxteis internacionais método ASTM E2419-13.
+                </p>
+                <p>
+                  Todos os produtos componentes do Power Trio G&S, que são eles:
+                  Lótus All-01 , Lótus Tira-Manchas e Lótus Pré-Imper, são
+                  produtos notificados pela ANVISA, garantindo a sua segurança e
+                  conformidade quanto a sua função.
+                </p>
+                <Image
+                  src={astm}
+                  alt="qr Code"
+                  className="size-[4.25rem] max-w-[6.25rem] self-center"
+                  draggable={false}
+                  priority
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
+                />
+              </div>
+              <div className="mt-2 flex h-fit w-1/2 flex-col gap-4 bg-blue-950 p-2 text-justify text-[8px] font-semibold">
+                <p>
+                  Certificamos também, que os produtos são homologados pela SVB
+                  (Sociedade Vegana Brasileira). Cuidamos da saúde do seu lar,
+                  sem agredir o meio ambiente e respeitando a vida dos animais.
+                </p>
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <Image
+                    src={selo}
+                    alt="Selo vegano"
+                    className="size-[3rem] max-w-[6.25rem]"
+                    draggable={false}
+                    priority
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
+                  />
+                  <p className="text-[5px] italic">
+                    Esta é uma parcela de cuidado com o nosso planeta que você
+                    nos ajudou a garantir, juntos iremos transformar o mundo em
+                    um lugar mais limpo e sustentável.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex">
+            <div className="flex w-1/2 flex-col gap-1 text-[8px] font-bold">
+              <p className="w-full leading-none">Cliente: {clientName}</p>
+              <p className="w-full leading-none">
                 Data:{' '}
                 {new Date(date).toLocaleDateString('pt-BR', {
                   day: '2-digit',
@@ -150,89 +267,13 @@ export default function CertificateTemplate({
                   year: 'numeric',
                 })}
               </p>
-              <p className="w-full bg-black/10 px-4 pb-4 leading-none">
-                Empresa: {companyName}
-              </p>
-              <p className="w-full bg-black/10 px-4 pb-4 leading-none">
+              <p className="w-full leading-none">Empresa: {companyName}</p>
+              <p className="w-full leading-none">
                 Técnico Aplicador: {technichalResponsible}
               </p>
             </div>
-          </div>
-          <div className="flex flex-row justify-between">
-            <p className="text-sm font-bold">{certificateNumber}</p>
-          </div>
-        </div>
-      </section>
-      {isModalOpen && (
-        <section
-          ref={certificateRef}
-          className="flex min-h-[794px] min-w-[1123px] flex-col gap-4 border-[6px] border-blue-950 bg-pattern-waves bg-cover bg-center bg-no-repeat px-14 py-8"
-        >
-          <div className="flex flex-col">
-            <div className="flex">
-              <Image
-                src={logo}
-                alt="G&S Home Solutions Image Logo"
-                className="max-w-[6.25rem]"
-                draggable={false}
-                priority
-                sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
-              />
-              <div className="my-auto flex w-full justify-center text-center text-2xl font-semibold">
-                <h1>Certificado de Garantia de Higienização</h1>
-              </div>
-            </div>
-            <div className="flex flex-col gap-4 pt-8 text-lg font-semibold">
-              <p>
-                Certificamos que a superfície foi higienizada com o Power Trio
-                da G&S Home Solutions. Esta higienização garante que a
-                superfície têxtil esteja livres de bactérias, conforme testes
-                realizados seguindo a normas têxteis internacionais método ASTM
-                E2419-13.
-              </p>
-              <p>
-                Todos os produtos componentes do Power Trio G&S, que são eles :
-                Lótus All-01 , Lótus Tira-Manchas e Lótus Pré-Imper, são
-                produtos notificados pela ANVISA, garantindo a sua segurança e
-                conformidade quanto a sua função.
-              </p>
-              <p>
-                Certificamos também, que os produtos são homologados pela SVB
-                (Sociedade Vegana Brasileira). Cuidamos da saúde do seu lar, sem
-                agredir o meio ambiente e respeitando a vida dos animais.
-              </p>
-              <p>
-                Esta é uma parcela de cuidado com o nosso planeta que você nos
-                ajudou a garantir, juntos iremos transformar o mundo em um lugar
-                mais limpo e sustentável.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-end justify-between gap-4">
-            <div className="flex w-1/2 flex-row justify-between pt-14 text-lg">
-              <div className="w-full space-y-4 font-bold">
-                <p className="w-full bg-black/10 px-4 pb-4 leading-none">
-                  Cliente: {clientName}
-                </p>
-                <p className="w-full bg-black/10 px-4 pb-4 leading-none">
-                  Data:{' '}
-                  {new Date(date).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
-                </p>
-                <p className="w-full bg-black/10 px-4 pb-4 leading-none">
-                  Empresa: {companyName}
-                </p>
-                <p className="w-full bg-black/10 px-4 pb-4 leading-none">
-                  Técnico Aplicador: {technichalResponsible}
-                </p>
-              </div>
-            </div>
-            <div className="flex max-w-prose flex-row justify-between">
-              <p className="text-sm font-bold">{certificateNumber}</p>
+            <div className="w flex w-1/2 flex-row items-end justify-end overflow-y-auto">
+              <p className="text-[0.2rem]">CERTIFICADO-{certificateNumber}</p>
             </div>
           </div>
         </section>
