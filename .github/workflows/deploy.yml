@@ -18,9 +18,9 @@ jobs:
 
       - name: 🔨 Build Project
         env:
-          DATABASE_URL: ${ secrets.DATABASE_URL }
-          SHADOW_DATABASE_URL: ${ secrets.SHADOW_DATABASE_URL }
-          JWT_SECRET: ${ secrets.JWT_SECRET }
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           npm install
           npm run build
@@ -28,9 +28,9 @@ jobs:
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${ secrets.FTP_SERVER }
-          username: ${ secrets.FTP_USERNAME }
-          password: ${ secrets.FTP_PASSWORD }
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
           server-dir: certificate.test/www/
           exclude: |
             **/.git*
