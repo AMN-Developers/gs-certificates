@@ -1,8 +1,17 @@
 import { OrderDTO } from '@/dtos/order';
-import { OrdersRepository } from '@/repositories/ordersRepository';
 import { orderInputSchema } from '@/app/_lib/validation-shemas/order';
+import { OrdersService } from '@/services/ordersService';
+import { env } from '@/utils/env';
 
 export async function POST(req: Request) {
+  const token = req.headers.get('Authorization');
+
+  if (!token || token !== `Bearer ${env.JWT_SECRET}`) {
+    return new Response('Unauthorized', {
+      status: 401,
+    });
+  }
+
   const requestBody = await req.json();
   const { data, error } = orderInputSchema.safeParse(requestBody);
 
@@ -13,8 +22,12 @@ export async function POST(req: Request) {
   }
 
   try {
-    const ordersRepository = new OrdersRepository();
-    await ordersRepository.createOrder(new OrderDTO(data.id, data.order_items));
+    const ordersService = new OrdersService();
+
+    for (const order of data) {
+      const orderDTO = OrderDTO.fromDb(order);
+      await ordersService.createOrder(orderDTO);
+    }
   } catch (error) {
     return new Response(
       `Failed to create order ${error instanceof Error ? error.message : ''}`,

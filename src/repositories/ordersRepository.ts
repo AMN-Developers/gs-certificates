@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import prisma from '@/lib/prisma/client';
 import { OrderDTO } from '@/dtos/order';
-import { IOrdersRepository } from '.';
+import { IOrdersRepository } from '@/repositories';
 
 export class OrdersRepository implements IOrdersRepository {
   private db: PrismaClient;
@@ -11,40 +11,24 @@ export class OrdersRepository implements IOrdersRepository {
   }
 
   async createOrder(order: OrderDTO) {
-    const { id, order_items } = order;
+    const { id, tokens } = order;
 
-    const newOrder = await this.db.order.create({
+    await this.db.certificateTokens.create({
       data: {
-        id,
-        order_items: {
-          connectOrCreate: [
-            ...order_items.map((orderItem) => {
-              return {
-                where: {
-                  order_id_product_id: {
-                    order_id: id,
-                    product_id: orderItem.product_id,
-                  },
-                },
-                create: {
-                  product_id: orderItem.product_id,
-                  quantity: orderItem.quantity,
-                },
-              };
-            }),
-          ],
+        user: {
+          connectOrCreate: {
+            where: {
+              id,
+            },
+            create: {
+              id,
+            },
+          },
         },
-      },
-      select: {
-        id: true,
-        order_items: true,
+        ...tokens,
       },
     });
 
-    if (!newOrder) {
-      throw new Error('Order not created');
-    }
-
-    return OrderDTO.fromDb(newOrder);
+    return 'Order created successfully';
   }
 }

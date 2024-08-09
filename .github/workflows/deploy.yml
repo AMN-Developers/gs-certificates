@@ -1,0 +1,40 @@
+on:
+  push:
+    branches:
+      - main
+name: 🚀 Deploy website on push
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20.10.0
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20.10.0
+
+      - name: 🔨 Build Project
+        env:
+          DATABASE_URL: ${ secrets.DATABASE_URL }
+          SHADOW_DATABASE_URL: ${ secrets.SHADOW_DATABASE_URL }
+          JWT_SECRET: ${ secrets.JWT_SECRET }
+        run: |
+          npm install
+          npm run build
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${ secrets.FTP_SERVER }
+          username: ${ secrets.FTP_USERNAME }
+          password: ${ secrets.FTP_PASSWORD }
+          server-dir: certificate.test/www/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .env
+            .env.example

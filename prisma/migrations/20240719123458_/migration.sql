@@ -1,15 +1,9 @@
 -- CreateTable
 CREATE TABLE `user` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `email` VARCHAR(191) NOT NULL,
-    `name` VARCHAR(191) NOT NULL,
-    `password` VARCHAR(191) NOT NULL,
-    `test` VARCHAR(191) NULL,
-    `role` ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER',
+    `id` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `user_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -45,6 +39,16 @@ CREATE TABLE `product` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `certificate` (
+    `tokenHash` VARCHAR(64) NOT NULL,
+    `encryptedData` VARCHAR(1000) NOT NULL,
+    `issuedAt` DATETIME(3) NOT NULL,
+    `user_id` INTEGER NOT NULL,
+
+    PRIMARY KEY (`tokenHash`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `order` ADD CONSTRAINT `order_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -53,3 +57,6 @@ ALTER TABLE `product_in_order` ADD CONSTRAINT `product_in_order_order_id_fkey` F
 
 -- AddForeignKey
 ALTER TABLE `product_in_order` ADD CONSTRAINT `product_in_order_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `certificate` ADD CONSTRAINT `certificate_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

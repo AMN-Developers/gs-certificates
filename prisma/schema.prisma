@@ -15,56 +15,32 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String
-  password  String
-  role      Role     @default(USER)
-  orders    Order[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 Int               @id
+  certificateTokenId Int               @unique
+  certificateTokens  CertificateTokens @relation(fields: [certificateTokenId], references: [id])
+  certificates       Certificate[]
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
 
   @@map("user")
 }
 
-enum Role {
-  USER
-  ADMIN
+model CertificateTokens {
+  id           Int      @id @default(autoincrement())
+  user         User?
+  higienizacao Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  @@map("roles")
+  @@map("certificate_tokens")
 }
 
-model Order {
-  id          Int              @id
-  user_id     Int?
-  user        User?            @relation(fields: [user_id], references: [id])
-  claimed     Boolean          @default(false)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  order_items ProductInOrder[]
+model Certificate {
+  tokenHash     String   @id @db.VarChar(64)
+  encryptedData String   @db.VarChar(1000)
+  issuedAt      DateTime
+  user_id       Int
+  user          User     @relation(fields: [user_id], references: [id])
 
-  @@map("order")
-}
-
-model ProductInOrder {
-  order_id   Int
-  order      Order    @relation(fields: [order_id], references: [id])
-  product_id Int
-  product    Product  @relation(fields: [product_id], references: [id])
-  quantity   Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@id([order_id, product_id])
-  @@map("product_in_order")
-}
-
-model Product {
-  id        Int              @id
-  name      String
-  orders    ProductInOrder[]
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-
-  @@map("product")
+  @@map("certificate")
 }
