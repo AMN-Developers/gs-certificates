@@ -17,10 +17,10 @@ export const loginByClientId = createServerAction()
     if (!clientId) {
       throw new Error('Client ID is required');
     }
-
+    console.log('clientId', clientId);
     const usersService = new UsersService();
     const token = await usersService.retrieveUserById(parseInt(clientId));
-
+    console.log('token', token);
     if (!token || typeof token !== 'string' || token.length === 0) {
       throw new Error('Error logging in user');
     }

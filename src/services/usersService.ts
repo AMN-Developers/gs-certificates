@@ -16,7 +16,7 @@ export class UsersService {
       new UserDTO(userId),
     );
 
-    if (!userFromDb) {
+    if (!userFromDb || !userFromDb.userId) {
       throw new Error('Usuário não encontrado!');
     }
     const token = jwt.sign(

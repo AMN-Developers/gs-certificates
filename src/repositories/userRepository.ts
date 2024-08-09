@@ -26,7 +26,7 @@ export class UsersRepository implements IUsersRepository {
         },
       },
     });
-
+    console.log('user', user);
     return UserDTO.fromDb(user?.id as number, user?.certificateTokens);
   }
 
