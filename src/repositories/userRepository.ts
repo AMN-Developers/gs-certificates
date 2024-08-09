@@ -27,31 +27,7 @@ export class UsersRepository implements IUsersRepository {
       },
     });
 
-    if (!user) {
-      throw new Error('Usuário não encontrado!');
-    }
-
-    return UserDTO.fromDb(user.id, user.certificateTokens);
-  }
-
-  async createUser(userData: {
-    userId: number;
-    certificateTokens: { [key: string]: number };
-  }) {
-    const { userId, certificateTokens } = userData;
-
-    const user = await this.db.user.create({
-      data: {
-        id: userId,
-        certificateTokens: {
-          create: {
-            higienizacao: certificateTokens.higienizacao,
-          },
-        },
-      },
-    });
-
-    return UserDTO.fromDb(user.id);
+    return UserDTO.fromDb(user?.id as number, user?.certificateTokens);
   }
 
   async updateTokenQuantity(userData: {
@@ -66,9 +42,7 @@ export class UsersRepository implements IUsersRepository {
       },
       data: {
         certificateTokens: {
-          update: {
-            [Object.keys(certificateTokens)[0]]: certificateTokens.higienizacao,
-          },
+          update: certificateTokens,
         },
       },
     });
