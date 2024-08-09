@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "npx prisma generate && node server.js",
     "build": "next build",
-    "start": "NODE_ENV=production node server.js",
+    "start": "npx prisma generate && NODE_ENV=production node server.js",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "lint:strict": "next lint '*/**/*.{js,jsx,ts,tsx}'",
