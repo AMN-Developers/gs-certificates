@@ -31,7 +31,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: certificate.test/www/
+          server-dir: test.certificate/www/
           exclude: |
             **/.git*
             **/.git*/**
