@@ -6,3 +6,4 @@ next-env.d.ts
 next.config.ts
 pnpm-lock.yaml
 commitlint.config.js
+src/app/_components/ui

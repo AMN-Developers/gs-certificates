@@ -4,7 +4,7 @@ import { CertificateDTO } from '@/dtos/certificate';
 import { UserDTO } from '@/dtos/user';
 
 export interface IOrdersRepository {
-  createOrder(order: OrderDTO): Promise<OrderDTO>;
+  createOrder(order: OrderDTO): Promise<string>;
 }
 
 export interface ICertificatesRepository {
@@ -13,10 +13,11 @@ export interface ICertificatesRepository {
 }
 
 export interface IUsersRepository {
+  createUserData(userData: UserDTO): Promise<UserDTO>;
   retrieveUserById(userData: UserDTO): Promise<UserDTO>;
-  createUser(userData: {
+  updateUserCertificateToken(userData: {
     userId: number;
-    certificateTokens: { [key: string]: number };
+    certificateTokenId: number;
   }): Promise<UserDTO>;
   updateTokenQuantity(userData: {
     userId: number;

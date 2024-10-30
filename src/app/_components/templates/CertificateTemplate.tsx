@@ -92,10 +92,7 @@ export default function CertificateTemplate({
         A pré-visualização do certificado é comprometida em dispositivos móveis,
         o que não afeta a qualidade final do mesmo.
       </p>
-      <section
-        ref={certificateRef}
-        className="flex w-full flex-col gap-4 rounded-md bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] px-4 py-2 text-white lg:w-2/3"
-      >
+      <section className="flex w-full flex-col gap-4 rounded-md bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] px-4 py-2 text-white lg:w-2/3">
         <div className="flex flex-col">
           <div className="mb-4 flex flex-col items-center gap-4">
             <Image
@@ -187,6 +184,7 @@ export default function CertificateTemplate({
       </section>
       {isModalOpen && (
         <section
+          className="flex w-full flex-col gap-4 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] px-4 py-2 text-white lg:w-2/3"
           ref={certificateRef}
           className="flex flex-col gap-4 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] px-14 py-12 text-white"
           style={{
