@@ -19,7 +19,6 @@ jobs:
       - name: 🔨 Build Project
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           npm install
@@ -31,7 +30,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: test.certificate/www/
+          server-dir: certificados.gshomesolutions.com.br/www/
           exclude: |
             **/.git*
             **/.git*/**
