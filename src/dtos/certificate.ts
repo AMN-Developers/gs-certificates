@@ -2,13 +2,13 @@ export class CertificateDTO {
   private _tokenHash: string;
   private _encryptedData: string;
   private _issuedAt: Date;
-  private _userId: number | undefined;
+  private _userId: number;
 
   constructor(
     tokenHash: string,
     encryptedData: string,
     issuedAt: Date,
-    userId?: number,
+    userId: number,
   ) {
     this._tokenHash = tokenHash;
     this._encryptedData = encryptedData;
@@ -36,7 +36,7 @@ export class CertificateDTO {
     tokenHash: string;
     encryptedData: string;
     issuedAt: Date;
-    userId?: number;
+    userId: number;
   }) {
     return new CertificateDTO(
       data.tokenHash,
