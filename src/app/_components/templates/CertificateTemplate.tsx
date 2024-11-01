@@ -4,6 +4,7 @@ import Image from 'next/image';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { Button } from '@components/ui/button';
+import { Share, Download } from 'lucide-react';
 import logo from '@assets/logo.png';
 import qrVegan from '@assets/qrVegan.png';
 import astm from '@assets/astm.png';
@@ -15,7 +16,6 @@ type TCertificateTemplateProps = {
     companyName: string;
     technichalResponsible: string;
   };
-
   certificateNumber: string;
 };
 
@@ -23,193 +23,147 @@ export default function CertificateTemplate({
   certificate,
   certificateNumber,
 }: TCertificateTemplateProps) {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const certificateRef = useRef<HTMLDivElement>(null);
   const { date, clientName, companyName, technichalResponsible } = certificate;
 
-  const webShareSupported = 'canShare' in navigator;
+  const generatePDF = async () => {
+    if (!certificateRef.current) return;
+    setIsGenerating(true);
 
-  const shareOrDownload = async () => {
-    setIsModalOpen((prev) => !prev);
+    try {
+      const a4Width = Math.floor((277 * 96) / 25.4); // ~1048px (10mm margins)
+      const a4Height = Math.floor((190 * 96) / 25.4); // ~719px (10mm margins)
 
-    do {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    } while (!certificateRef.current);
+      const canvas = await html2canvas(certificateRef.current, {
+        scale: 2,
+        width: a4Width,
+        height: a4Height,
+        windowWidth: a4Width,
+        windowHeight: a4Height,
+        x: 20, // Shift right by 20px
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+      });
 
-    if (!certificateRef.current) {
-      return;
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('l', 'mm', 'a4');
+
+      // Add margins to PDF
+      pdf.addImage(imgData, 'PNG', 10, 10, 277, 190);
+      return pdf;
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      throw error;
+    } finally {
+      setIsGenerating(false);
     }
+  };
 
-    if (webShareSupported) {
-      const pdf = new jsPDF('p', 'px', 'a4');
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        const pdf = await generatePDF();
+        if (!pdf) return;
 
-      const width = pdf.internal.pageSize.getWidth();
-      const height = pdf.internal.pageSize.getHeight();
+        const pdfBlob = pdf.output('blob');
+        const file = new File([pdfBlob], `${clientName}-certificado.pdf`, {
+          type: 'application/pdf',
+        });
 
-      const canvas = await html2canvas(certificateRef.current, {
-        scale: 2,
-      });
+        await navigator.share({
+          title: 'Certificado de Garantia de Higienização',
+          text: `Certificado de Garantia de Higienização para ${clientName}`,
+          url: `${window.location.origin}/certificados/${certificateNumber}`,
+          files: [file],
+        });
+      } else {
+        // Fallback for browsers that don't support sharing
+        const pdf = await generatePDF();
+        if (!pdf) return;
+        pdf.save(`${clientName}-certificado.pdf`);
+      }
+    } catch (error) {
+      console.error('Error sharing certificate:', error);
+    }
+  };
 
-      const imgData = canvas.toDataURL('image/png');
-
-      pdf.addImage(imgData, 'PNG', 0, 0, width, height);
-      const pdfBlob = pdf.output('blob');
-
-      const file = new File([pdfBlob], `${clientName}.pdf`, {
-        type: 'application/pdf',
-      });
-
-      setIsModalOpen((prev) => !prev);
-
-      await navigator.share({
-        title: 'Certificado de Garantia de Higienização',
-        text: `Certificado de Garantia de Higienização para ${clientName}`,
-        url: `{window.location.origin}/certificado/${certificateNumber}`,
-        files: [file],
-      });
-    } else {
-      const canvas = await html2canvas(certificateRef.current, {
-        scale: 2,
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'px', 'a4');
-      const width = pdf.internal.pageSize.getWidth();
-      const height = pdf.internal.pageSize.getHeight();
-
-      pdf.addImage(imgData, 'PNG', 0, 0, width, height);
-      pdf.save(`${clientName}.pdf`);
+  const handleDownload = async () => {
+    try {
+      const pdf = await generatePDF();
+      if (!pdf) return;
+      pdf.save(`${clientName}-certificado.pdf`);
+    } catch (error) {
+      console.error('Error downloading certificate:', error);
     }
   };
 
   return (
     <>
-      <Button onClick={shareOrDownload} className="max-w-fit">
-        Compartilhar PDF
-      </Button>
-      <Button className="max-w-fit">Salvar PDF</Button>
-      <p className="text-center text-sm font-bold text-red-500">
-        A pré-visualização do certificado é comprometida em dispositivos móveis,
-        o que não afeta a qualidade final do mesmo.
-      </p>
-      <section className="flex w-full flex-col gap-4 rounded-md bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] px-4 py-2 text-white lg:w-2/3">
-        <div className="flex flex-col">
-          <div className="mb-4 flex flex-col items-center gap-4">
-            <Image
-              src={logo}
-              alt="G&S Home Solutions Image Logo"
-              className="w-[4rem] max-w-[6.25rem] sm:w-[5rem]"
-              draggable={false}
-              priority
-              sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
-            />
-            <div className="my-auto flex w-full justify-center text-center text-lg font-extrabold sm:text-xl md:text-2xl">
-              <h1 className="text-center">
+      {/* Actions Section */}
+      <div className="mb-8 space-y-6">
+        <div className="flex w-full flex-col gap-4 sm:flex-row sm:justify-end">
+          <Button
+            onClick={handleShare}
+            disabled={isGenerating}
+            variant="outline"
+            size="sm"
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-brand shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isGenerating ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand border-t-transparent" />
+            ) : (
+              <Share className="h-4 w-4" />
+            )}
+            Compartilhar
+          </Button>
+          <Button
+            onClick={handleDownload}
+            disabled={isGenerating}
+            size="sm"
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isGenerating ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
+            Baixar PDF
+          </Button>
+        </div>
+
+        <div className="rounded-lg bg-gray-50 px-4 py-3">
+          <p className="text-center text-sm font-medium text-gray-600">
+            A pré-visualização do certificado pode variar em dispositivos
+            móveis, mas não afeta a qualidade final do PDF.
+          </p>
+        </div>
+      </div>
+
+      {/* Certificate Preview */}
+      <div className="relative w-full overflow-hidden rounded-lg bg-white shadow-lg">
+        <div className="aspect-[1.4/1] w-full">
+          <div
+            ref={certificateRef}
+            className="flex min-h-[595px] w-full flex-col gap-8 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] p-8 text-white sm:p-12"
+          >
+            {/* Certificate Header */}
+            <div className="flex flex-col items-center gap-6">
+              <Image
+                src={logo}
+                alt="G&S Home Solutions Logo"
+                className="h-24 w-auto sm:h-32"
+                priority
+              />
+              <h1 className="text-center text-2xl font-bold sm:text-3xl md:text-4xl">
                 Certificado de Garantia de Higienização
               </h1>
             </div>
-          </div>
-          <div className="flex flex-row gap-4">
-            <div className="mt-2 flex w-1/2 flex-col gap-2 text-justify text-[8px] font-semibold sm:text-lg">
-              <p>
-                Certificamos que a superfície foi higienizada com o Power Trio
-                da G&S Home Solutions.
-              </p>
-              <p>
-                Esta higienização garante que a superfície têxtil esteja livres
-                de bactérias, conforme testes realizados seguindo a normas
-                têxteis internacionais método ASTM E2419-13.
-              </p>
-              <p>
-                Todos os produtos componentes do Power Trio G&S, que são eles:
-                Lótus All-01 , Lótus Tira-Manchas e Lótus Pré-Imper, são
-                produtos notificados pela ANVISA, garantindo a sua segurança e
-                conformidade quanto a sua função.
-              </p>
-              <Image
-                src={astm}
-                alt="qr Code"
-                className="mt-4 w-[4.25rem] max-w-[6.25rem] self-center sm:w-[6rem]"
-                draggable={false}
-                priority
-                sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
-              />
-            </div>
-            <div className="mt-2 flex h-fit w-1/2 flex-col gap-4 rounded-lg bg-shades-wave bg-cover bg-no-repeat px-4 py-2 text-justify text-[8px] font-semibold sm:text-lg">
-              <p>
-                Certificamos também, que os produtos são homologados pela SVB
-                (Sociedade Vegana Brasileira). Cuidamos da saúde do seu lar, sem
-                agredir o meio ambiente e respeitando a vida dos animais.
-              </p>
-              <div className="flex flex-col items-center justify-center gap-2">
-                <Image
-                  src={qrVegan}
-                  alt="Selo vegano"
-                  className="w-[3rem] max-w-[6.25rem] sm:w-[6rem]"
-                  draggable={false}
-                  priority
-                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
-                />
-                <p className="px-4 py-2 text-center text-[5px] italic sm:text-xs">
-                  Esta é uma parcela de cuidado com o nosso planeta que você nos
-                  ajudou a garantir, juntos iremos transformar o mundo em um
-                  lugar mais limpo e sustentável.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="mt-10 flex py-2">
-          <div className="flex w-1/2 flex-col gap-2 text-[8px] font-semibold sm:text-xs">
-            <p className="w-full leading-none">Cliente: {clientName}</p>
-            <p className="w-full leading-none">
-              Data:{' '}
-              {new Date(date).toLocaleDateString('pt-BR', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric',
-              })}
-            </p>
-            <p className="w-full leading-none">Empresa: {companyName}</p>
-            <p className="w-full leading-none">
-              Técnico Aplicador: {technichalResponsible}
-            </p>
-          </div>
-          <div className="w flex w-1/2 flex-row items-end justify-end overflow-y-auto">
-            <p className="text-right text-[0.2rem] sm:text-[0.5rem]">
-              CERTIFICADO-{certificateNumber}
-            </p>
-          </div>
-        </div>
-      </section>
-      {isModalOpen && (
-        <section
-          className="flex w-full flex-col gap-4 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] px-4 py-2 text-white lg:w-2/3"
-          ref={certificateRef}
-          className="flex flex-col gap-4 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] px-14 py-12 text-white"
-          style={{
-            width: '210mm', // Largura A4
-            height: '297mm', // Altura A4
-          }}
-        >
-          <div className="flex flex-col">
-            <div className="mb-4 flex flex-col items-center gap-4">
-              <Image
-                src={logo}
-                alt="G&S Home Solutions Image Logo"
-                className="mb-3 h-[120px] w-[100px]"
-                draggable={false}
-                priority
-                sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
-              />
-              <div className="mx-10 my-auto mb-5 flex w-full justify-center text-center text-[35px] font-semibold">
-                <h1 className="text-center">
-                  Certificado de Garantia de Higienização
-                </h1>
-              </div>
-            </div>
-            <div className="flex flex-row gap-4">
-              <div className="mt-2 flex w-1/2 flex-col gap-2 text-justify text-[16px] font-semibold">
+
+            {/* Certificate Content */}
+            <div className="grid flex-1 grid-cols-1 gap-8 sm:grid-cols-2">
+              <div className="flex flex-col gap-4 text-base sm:text-lg">
                 <p>
                   Certificamos que a superfície foi higienizada com o Power Trio
                   da G&S Home Solutions.
@@ -220,68 +174,61 @@ export default function CertificateTemplate({
                   têxteis internacionais método ASTM E2419-13.
                 </p>
                 <p>
-                  Todos os produtos componentes do Power Trio G&S, que são eles:
-                  Lótus All-01, Lótus Tira-Manchas e Lótus Pré-Imper, são
-                  produtos notificados pela ANVISA, garantindo a sua segurança e
-                  conformidade quanto a sua função.
+                  Todos os produtos componentes do Power Trio G&S são
+                  notificados pela ANVISA, garantindo sua segurança e
+                  conformidade.
                 </p>
                 <Image
                   src={astm}
-                  alt="qr Code"
-                  className="mt-4 h-[120px] w-[120px] self-center"
-                  draggable={false}
+                  alt="ASTM Certification"
+                  className="mt-4 h-24 w-auto self-center"
                   priority
-                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
                 />
               </div>
-              <div className="mt-2 flex h-fit w-1/2 flex-col gap-4 rounded-lg bg-shades-wave bg-cover bg-no-repeat px-4 py-2 text-justify text-[16px] font-semibold">
+
+              <div className="flex flex-col gap-4 rounded-lg bg-shades-wave bg-cover bg-no-repeat p-6 text-base sm:text-lg">
                 <p>
                   Certificamos também que os produtos são homologados pela SVB
                   (Sociedade Vegana Brasileira). Cuidamos da saúde do seu lar,
                   sem agredir o meio ambiente e respeitando a vida dos animais.
                 </p>
-                <div className="flex flex-col items-center justify-center gap-2">
+                <div className="flex flex-col items-center gap-4">
                   <Image
                     src={qrVegan}
-                    alt="Selo vegano"
-                    className="mt-4 h-[70px] w-[90px] self-center"
-                    draggable={false}
+                    alt="Selo Vegano"
+                    className="h-20 w-auto"
                     priority
-                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 640px, 768px"
                   />
-                  <p className="px-4 py-2 text-center text-[10px] italic">
+                  <p className="text-center text-sm italic">
                     Esta é uma parcela de cuidado com o nosso planeta que você
-                    nos ajudou a garantir, juntos iremos transformar o mundo em
-                    um lugar mais limpo e sustentável.
+                    nos ajudou a garantir.
                   </p>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="mt-10 flex py-2">
-            <div className="flex w-1/2 flex-col gap-2 text-[14px] font-semibold">
-              <p className="w-full leading-none">Cliente: {clientName}</p>
-              <p className="w-full leading-none">
-                Data:{' '}
-                {new Date(date).toLocaleDateString('pt-BR', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </p>
-              <p className="w-full leading-none">Empresa: {companyName}</p>
-              <p className="w-full leading-none">
-                Técnico Aplicador: {technichalResponsible}
-              </p>
-            </div>
-            <div className="flex w-1/2 flex-row items-end justify-end overflow-y-auto">
-              <p className="p-2 text-right text-[10px]">
+
+            {/* Certificate Footer */}
+            <div className="mt-8 flex flex-col justify-between gap-4 border-t border-white/20 pt-8 sm:flex-row">
+              <div className="flex flex-col gap-2 text-sm sm:text-base">
+                <p>Cliente: {clientName}</p>
+                <p>
+                  Data:{' '}
+                  {new Date(date).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+                <p>Empresa: {companyName}</p>
+                <p>Técnico Aplicador: {technichalResponsible}</p>
+              </div>
+              <div className="text-right text-xs">
                 CERTIFICADO-{certificateNumber}
-              </p>
+              </div>
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </div>
     </>
   );
 }
