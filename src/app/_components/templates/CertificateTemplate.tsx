@@ -1,13 +1,12 @@
 'use client';
 import { useRef, useState } from 'react';
 import Image from 'next/image';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 import { Button } from '@components/ui/button';
-import { Share, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import logo from '@assets/logo.png';
 import qrVegan from '@assets/qrVegan.png';
 import astm from '@assets/astm.png';
+import { generateCertificatePDF } from '@/app/certificados/[certificateId]/action';
 
 type TCertificateTemplateProps = {
   certificate: {
@@ -24,78 +23,43 @@ export default function CertificateTemplate({
   certificateNumber,
 }: TCertificateTemplateProps) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [pdf, setPdf] = useState<Uint8Array | null>(null);
   const certificateRef = useRef<HTMLDivElement>(null);
   const { date, clientName, companyName, technichalResponsible } = certificate;
 
-  const generatePDF = async () => {
-    if (!certificateRef.current) return;
-    setIsGenerating(true);
-
-    try {
-      const a4Width = Math.floor((277 * 96) / 25.4); // ~1048px (10mm margins)
-      const a4Height = Math.floor((190 * 96) / 25.4); // ~719px (10mm margins)
-
-      const canvas = await html2canvas(certificateRef.current, {
-        scale: 2,
-        width: a4Width,
-        height: a4Height,
-        windowWidth: a4Width,
-        windowHeight: a4Height,
-        x: 20, // Shift right by 20px
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('l', 'mm', 'a4');
-
-      // Add margins to PDF
-      pdf.addImage(imgData, 'PNG', 10, 10, 277, 190);
-      return pdf;
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      throw error;
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const handleShare = async () => {
-    try {
-      if (navigator.share) {
-        const pdf = await generatePDF();
-        if (!pdf) return;
-
-        const pdfBlob = pdf.output('blob');
-        const file = new File([pdfBlob], `${clientName}-certificado.pdf`, {
-          type: 'application/pdf',
-        });
-
-        await navigator.share({
-          title: 'Certificado de Garantia de Higienização',
-          text: `Certificado de Garantia de Higienização para ${clientName}`,
-          url: `${window.location.origin}/certificados/${certificateNumber}`,
-          files: [file],
-        });
-      } else {
-        // Fallback for browsers that don't support sharing
-        const pdf = await generatePDF();
-        if (!pdf) return;
-        pdf.save(`${clientName}-certificado.pdf`);
-      }
-    } catch (error) {
-      console.error('Error sharing certificate:', error);
-    }
-  };
-
   const handleDownload = async () => {
     try {
-      const pdf = await generatePDF();
-      if (!pdf) return;
-      pdf.save(`${clientName}-certificado.pdf`);
+      setIsGenerating(true);
+      if (pdf) {
+        const blob = new Blob([pdf], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${clientName}-certificado.pdf`;
+        link.click();
+        return;
+      }
+      const [data, error] = await generateCertificatePDF({
+        certificateId: certificateNumber,
+      });
+
+      if (error || !data) {
+        console.error('Error generating PDF:', error);
+        return;
+      }
+      const uint8Array = new Uint8Array(data.pdf);
+      setPdf(uint8Array);
+      const blob = new Blob([uint8Array], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${clientName}-certificado.pdf`;
+      link.click();
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error downloading certificate:', error);
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -104,20 +68,6 @@ export default function CertificateTemplate({
       {/* Actions Section */}
       <div className="mb-8 space-y-6">
         <div className="flex w-full flex-col gap-4 sm:flex-row sm:justify-end">
-          <Button
-            onClick={handleShare}
-            disabled={isGenerating}
-            variant="outline"
-            size="sm"
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-brand shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isGenerating ? (
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand border-t-transparent" />
-            ) : (
-              <Share className="h-4 w-4" />
-            )}
-            Compartilhar
-          </Button>
           <Button
             onClick={handleDownload}
             disabled={isGenerating}
