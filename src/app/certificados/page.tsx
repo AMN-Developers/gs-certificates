@@ -9,6 +9,7 @@ import { useServerActionQuery } from '@lib/hooks/server-action-hooks';
 import { useRouter } from 'next/navigation';
 import { getUser } from './action';
 import Link from 'next/link';
+import { LogOut } from 'lucide-react';
 
 export default function Certificates() {
   const router = useRouter();
@@ -36,60 +37,82 @@ export default function Certificates() {
   });
 
   return (
-    <section className="mx-auto flex h-full max-w-screen-xl flex-col gap-4 px-4 py-4 xl:px-0">
-      <div className="flex w-full justify-between">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-semibold">
+    <section className="mx-auto flex min-h-[calc(100vh-10rem)] w-full max-w-screen-xl flex-col gap-6 px-4 py-8 xl:px-0">
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 rounded-lg bg-white p-6 shadow-lg sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
             Emissão de certificados G&S
           </h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Seja bem-vindo ao seu painel de certificados digitais
+          </p>
         </div>
-        <div className="text-right font-medium">
+
+        <div className="flex items-center gap-4">
           {isLoading ? (
-            <Skeleton className="h-full w-full bg-brand/10" />
+            <Skeleton className="h-10 w-32" />
           ) : (
-            <div className="flex items-center justify-end gap-2 leading-7">
-              <h2 className="text-xl">Olá Cliente {data?.id}</h2>
+            <>
+              <span className="text-sm font-medium text-gray-600">
+                Cliente {data?.id}
+              </span>
               <Button
-                className="m-0 h-auto p-0 text-brand hover:underline"
-                variant="link"
+                variant="outline"
+                size="sm"
                 onClick={() => execute()}
+                className="flex items-center gap-2"
               >
+                <LogOut className="h-4 w-4" />
                 Sair
               </Button>
-            </div>
+            </>
           )}
-          <p>Seja bem-vindo ao seu painel de certificados digitais</p>
         </div>
       </div>
-      <div>
+
+      {/* Certificates Grid */}
+      <div className="grid gap-6">
         {isLoading ? (
-          <div className="space-y-4 pt-4">
-            <Skeleton className="h-24 w-full bg-brand/10" />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-48 rounded-lg bg-brand/10" />
+            ))}
           </div>
         ) : (
-          <div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {data?.certificateTokens ? (
               Object.entries(data.certificateTokens).map(([key, value]) => (
                 <div
                   key={key}
-                  className="flex h-24 justify-between rounded bg-brand p-4"
+                  className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-brand to-[#1a237e] p-6 shadow-lg transition-all hover:shadow-xl"
                 >
-                  <div>
-                    <h3 className="font-bold uppercase text-white">{key}</h3>
-                    <p className="text-white underline">
-                      {value} certificados disponíveis.
-                    </p>
+                  <div className="relative z-10 flex h-full flex-col justify-between gap-4">
+                    <div>
+                      <h3 className="text-lg font-bold uppercase text-white">
+                        {key}
+                      </h3>
+                      <p className="mt-2 text-white/90">
+                        {value} certificados disponíveis
+                      </p>
+                    </div>
+
+                    <Link
+                      href={`/certificados/novo?token=${key}`}
+                      className="inline-flex w-full items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-brand shadow-sm transition-colors hover:bg-gray-50"
+                    >
+                      Emitir certificado
+                    </Link>
                   </div>
-                  <Link
-                    href={`/certificados/novo?token=${key}`}
-                    className="flex items-center rounded border border-white px-4 py-2 text-white transition-all duration-500 hover:bg-white hover:text-brand"
-                  >
-                    Emitir certificado
-                  </Link>
+
+                  {/* Decorative background pattern */}
+                  <div className="absolute inset-0 z-0 bg-pattern-waves bg-cover bg-center opacity-10" />
                 </div>
               ))
             ) : (
-              <div>Você não possui nenhum token de certificado</div>
+              <div className="col-span-full rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-center text-sm text-yellow-800">
+                Você não possui nenhum token de certificado disponível
+              </div>
             )}
           </div>
         )}
