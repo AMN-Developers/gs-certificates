@@ -2,9 +2,9 @@
 'use server';
 
 import { createServerAction } from 'zsa';
-import puppeteer from 'puppeteer';
 import { z } from 'zod';
 import { CertificatesService } from '@/services/certificatesService';
+import { env } from '@/utils/env';
 
 export const retrieveCertificateById = createServerAction()
   .input(
@@ -34,37 +34,25 @@ export const generateCertificatePDF = createServerAction()
     const { certificateId } = input;
 
     try {
-      const browser = await puppeteer.launch({
-        headless: true,
-      });
-
-      const page = await browser.newPage();
-
-      await page.setViewport({
-        width: Math.floor((297 * 96) / 25.4),
-        height: Math.floor((210 * 96) / 25.4),
-        deviceScaleFactor: 2,
-      });
-
-      await page.goto(
-        `${process.env.NEXT_PUBLIC_APP_URL}/certificados/${certificateId}/print`,
+      const response = await fetch(
+        'https://html2pdf-nu.vercel.app/api/generate',
         {
-          waitUntil: 'networkidle0',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${env.JWT_SECRET}`,
+          },
+          body: JSON.stringify({
+            url: `${process.env.NEXT_PUBLIC_APP_URL}/certificados/${certificateId}/print`,
+          }),
         },
       );
 
-      // return pdf buffer
-      const pdf = await page.pdf({
-        format: 'A4',
-        landscape: true,
-        printBackground: true,
-        preferCSSPageSize: true,
-      });
-
-      await browser.close();
+      const pdfBuffer = await response.arrayBuffer();
+      const uint8Array = new Uint8Array(pdfBuffer);
 
       return {
-        pdf: Array.from(pdf),
+        pdf: Array.from(uint8Array),
       };
     } catch (error) {
       console.error('Error generating PDF:', error);
