@@ -7,6 +7,7 @@ import logo from '@assets/logo.png';
 import qrVegan from '@assets/qrVegan.png';
 import astm from '@assets/astm.png';
 import { generateCertificatePDF } from '@/app/certificados/[certificateId]/action';
+import ShareButton from '@/app/_components/molecules/ShareButton';
 
 type TCertificateTemplateProps = {
   certificate: {
@@ -81,6 +82,14 @@ export default function CertificateTemplate({
             )}
             Baixar PDF
           </Button>
+          <ShareButton
+            clientName={clientName}
+            certificateId={certificateNumber}
+            setPdf={setPdf}
+            pdf={pdf}
+            isGenerating={isGenerating}
+            setIsGenerating={setIsGenerating}
+          />
         </div>
 
         <div className="rounded-lg bg-gray-50 px-4 py-3">
