@@ -15,6 +15,7 @@ export default function ShareButton({
 }: {
   clientName: string;
   certificateId: string;
+  // eslint-disable-next-line no-unused-vars
   setPdf: (pdf: Uint8Array) => void;
   pdf: Uint8Array | null;
   isGenerating: boolean;
@@ -23,6 +24,19 @@ export default function ShareButton({
   const handleShare = async () => {
     try {
       setIsGenerating(true);
+      if (pdf) {
+        const blob = new Blob([pdf!], { type: 'application/pdf' });
+        const file = new File([blob], `${clientName}-certificado.pdf`, {
+          type: 'application/pdf',
+        });
+
+        await navigator.share({
+          title: 'Certificado de Garantia de Higienização',
+          text: `Certificado de Garantia de Higienização para ${clientName}`,
+          files: [file],
+        });
+      }
+
       if (!pdf) {
         const [data, error] = await generateCertificatePDF({
           certificateId,
