@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     return new Response(
-      `Failed to update order ${error instanceof Error ? error.message : ''}`,
+      `Failed to update order: ${error instanceof Error ? error.message : ''}`,
       {
         status: 500,
       },
