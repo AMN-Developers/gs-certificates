@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@components/ui/button';
 import { Download } from 'lucide-react';
@@ -63,6 +63,33 @@ export default function CertificateTemplate({
       setIsGenerating(false);
     }
   };
+
+  useEffect(() => {
+    async function generatePDF() {
+      try {
+        setIsGenerating(true);
+
+        const [data, error] = await generateCertificatePDF({
+          certificateId: certificateNumber,
+        });
+
+        if (error || !data) {
+          console.error('Error generating PDF:', error);
+          return;
+        }
+        const uint8Array = new Uint8Array(data.pdf);
+        setPdf(uint8Array);
+      } catch (error) {
+        console.error('Error while generating pdf:', error);
+      } finally {
+        setIsGenerating(false);
+      }
+    }
+
+    if (!pdf) {
+      generatePDF();
+    }
+  }, [certificateNumber, pdf]);
 
   return (
     <>
