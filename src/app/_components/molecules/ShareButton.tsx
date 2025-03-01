@@ -24,19 +24,8 @@ export default function ShareButton({
   const handleShare = async () => {
     try {
       setIsGenerating(true);
-      if (pdf) {
-        const blob = new Blob([pdf!], { type: 'application/pdf' });
-        const file = new File([blob], `${clientName}-certificado.pdf`, {
-          type: 'application/pdf',
-        });
 
-        await navigator.share({
-          title: 'Certificado de Garantia de Higienização',
-          text: `Certificado de Garantia de Higienização para ${clientName}`,
-          files: [file],
-        });
-      }
-
+      // If PDF doesn't exist yet, generate it first
       if (!pdf) {
         const [data, error] = await generateCertificatePDF({
           certificateId,
@@ -44,22 +33,45 @@ export default function ShareButton({
 
         if (error || !data) {
           console.error('Error generating PDF:', error);
+          setIsGenerating(false);
           return;
         }
+
         const uint8Array = new Uint8Array(data.pdf);
         setPdf(uint8Array);
+
+        // Use the newly generated PDF
+        const blob = new Blob([uint8Array], { type: 'application/pdf' });
+        const file = new File([blob], `${clientName}-certificado.pdf`, {
+          type: 'application/pdf',
+        });
+
+        try {
+          await navigator.share({
+            title: 'Certificado de Garantia de Higienização',
+            text: `Certificado de Garantia de Higienização para ${clientName}`,
+            files: [file],
+          });
+        } catch (shareError) {
+          console.error('Error during share after PDF generation:', shareError);
+        }
+      } else {
+        // PDF already exists, share it directly
+        const blob = new Blob([pdf], { type: 'application/pdf' });
+        const file = new File([blob], `${clientName}-certificado.pdf`, {
+          type: 'application/pdf',
+        });
+
+        try {
+          await navigator.share({
+            title: 'Certificado de Garantia de Higienização',
+            text: `Certificado de Garantia de Higienização para ${clientName}`,
+            files: [file],
+          });
+        } catch (shareError) {
+          console.error('Error during share with existing PDF:', shareError);
+        }
       }
-
-      const blob = new Blob([pdf!], { type: 'application/pdf' });
-      const file = new File([blob], `${clientName}-certificado.pdf`, {
-        type: 'application/pdf',
-      });
-
-      await navigator.share({
-        title: 'Certificado de Garantia de Higienização',
-        text: `Certificado de Garantia de Higienização para ${clientName}`,
-        files: [file],
-      });
     } catch (error) {
       console.error('Error sharing certificate:', error);
     } finally {
