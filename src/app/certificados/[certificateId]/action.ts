@@ -32,21 +32,22 @@ export const generateCertificatePDF = createServerAction()
   )
   .handler(async ({ input }) => {
     const { certificateId } = input;
+    const html2pdfUrl =
+      process.env.NODE_ENV === 'production'
+        ? 'https://html2pdf-nu.vercel.app/api/generate'
+        : 'http://localhost:3001/api/generate';
 
     try {
-      const response = await fetch(
-        'https://html2pdf-nu.vercel.app/api/generate',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${env.JWT_SECRET}`,
-          },
-          body: JSON.stringify({
-            url: `${process.env.NEXT_PUBLIC_APP_URL}/certificados/${certificateId}/print`,
-          }),
+      const response = await fetch(html2pdfUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${env.JWT_SECRET}`,
         },
-      );
+        body: JSON.stringify({
+          url: `${process.env.NEXT_PUBLIC_APP_URL}/certificados/${certificateId}/print`,
+        }),
+      });
 
       const pdfBuffer = await response.arrayBuffer();
       const uint8Array = new Uint8Array(pdfBuffer);

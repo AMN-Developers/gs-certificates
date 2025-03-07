@@ -17,7 +17,7 @@ export default function ShareButton({
   clientName: string;
   certificateId: string;
   // eslint-disable-next-line no-unused-vars
-  setPdf: (pdf: Uint8Array) => void;
+  setPdf: (image: Uint8Array) => void;
   pdf: Uint8Array | null;
   isGenerating: boolean;
   setIsGenerating: Dispatch<SetStateAction<boolean>>;
@@ -29,50 +29,49 @@ export default function ShareButton({
       setIsGenerating(true);
       setShareError(null);
 
-      // Ensure we have the PDF data
-      let pdfData = pdf;
-      if (!pdfData) {
+      // Ensure we have the image data
+      let imageData = pdf;
+      if (!imageData) {
         const [data, error] = await generateCertificatePDF({
           certificateId,
         });
 
         if (error || !data) {
-          console.error('Error generating PDF:', error);
+          console.error('Error generating certificate image:', error);
           setIsGenerating(false);
           return;
         }
 
-        pdfData = new Uint8Array(data.pdf);
-        setPdf(pdfData);
+        imageData = new Uint8Array(data.pdf);
+        setPdf(imageData);
       }
 
-      // Create blob
-      const blob = new Blob([pdfData], { type: 'application/pdf' });
+      // Create blob with image/jpeg MIME type
+      const blob = new Blob([imageData], { type: 'image/jpeg' });
 
-      // OPTIMIZATION: Try creating the file with a more specific MIME type
-      // Some research suggests this might help compatibility
-      const file = new File([blob], `${clientName}-certificado.pdf`, {
-        type: 'application/pdf',
+      // Create file with .jpg extension
+      const file = new File([blob], `${clientName}-certificado.jpg`, {
+        type: 'image/jpeg',
         lastModified: new Date().getTime(),
       });
 
       // Check if navigator.canShare is available and can share files
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
-          // Try the standard Web Share API with a more limited payload
-          // Some apps handle simpler sharing requests better
+          // Try to share the image
           await navigator.share({
             files: [file],
+            title: 'Certificado de Garantia de Higienização',
+            text: `Certificado de Garantia de Higienização para ${clientName}`,
           });
         } catch (shareError: any) {
-          console.error('Standard share failed:', shareError);
+          console.error('Share failed:', shareError);
 
-          // Try alternative share method
           if (shareError.name === 'NotAllowedError') {
             // User canceled - nothing to do
             console.log('User canceled share operation');
           } else {
-            throw shareError; // Let the catch block handle it
+            throw shareError;
           }
         }
       } else {
@@ -83,13 +82,13 @@ export default function ShareButton({
       console.error('Error sharing certificate:', error);
       setShareError(error.message || 'Error sharing certificate');
 
-      // Create a fallback URL for sharing
+      // Fallback to download when sharing fails
       if (pdf) {
-        const blob = new Blob([pdf], { type: 'application/pdf' });
+        const blob = new Blob([pdf], { type: 'image/jpeg' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${clientName}-certificado.pdf`;
+        a.download = `${clientName}-certificado.jpg`;
         document.body.appendChild(a);
         a.click();
 
@@ -100,7 +99,7 @@ export default function ShareButton({
         }, 100);
 
         setShareError(
-          'Baixamos o PDF para você. Por favor, use-o para compartilhar manualmente.',
+          'Baixamos a imagem para você. Por favor, use-a para compartilhar manualmente.',
         );
       }
     } finally {
