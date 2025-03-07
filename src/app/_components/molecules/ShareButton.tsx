@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { Share } from 'lucide-react';
 import { Button } from '@components/ui/button';
 import { generateCertificatePDF } from '@/app/certificados/[certificateId]/action';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 
 export default function ShareButton({
   clientName,
@@ -21,12 +22,16 @@ export default function ShareButton({
   isGenerating: boolean;
   setIsGenerating: Dispatch<SetStateAction<boolean>>;
 }) {
+  const [shareError, setShareError] = useState<string | null>(null);
+
   const handleShare = async () => {
     try {
       setIsGenerating(true);
+      setShareError(null);
 
-      // If PDF doesn't exist yet, generate it first
-      if (!pdf) {
+      // Ensure we have the PDF data
+      let pdfData = pdf;
+      if (!pdfData) {
         const [data, error] = await generateCertificatePDF({
           certificateId,
         });
@@ -37,61 +42,91 @@ export default function ShareButton({
           return;
         }
 
-        const uint8Array = new Uint8Array(data.pdf);
-        setPdf(uint8Array);
+        pdfData = new Uint8Array(data.pdf);
+        setPdf(pdfData);
+      }
 
-        // Use the newly generated PDF
-        const blob = new Blob([uint8Array], { type: 'application/pdf' });
-        const file = new File([blob], `${clientName}-certificado.pdf`, {
-          type: 'application/pdf',
-        });
+      // Create blob
+      const blob = new Blob([pdfData], { type: 'application/pdf' });
 
+      // OPTIMIZATION: Try creating the file with a more specific MIME type
+      // Some research suggests this might help compatibility
+      const file = new File([blob], `${clientName}-certificado.pdf`, {
+        type: 'application/pdf',
+        lastModified: new Date().getTime(),
+      });
+
+      // Check if navigator.canShare is available and can share files
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
+          // Try the standard Web Share API with a more limited payload
+          // Some apps handle simpler sharing requests better
           await navigator.share({
-            title: 'Certificado de Garantia de Higienização',
-            text: `Certificado de Garantia de Higienização para ${clientName}`,
             files: [file],
           });
-        } catch (shareError) {
-          console.error('Error during share after PDF generation:', shareError);
+        } catch (shareError: any) {
+          console.error('Standard share failed:', shareError);
+
+          // Try alternative share method
+          if (shareError.name === 'NotAllowedError') {
+            // User canceled - nothing to do
+            console.log('User canceled share operation');
+          } else {
+            throw shareError; // Let the catch block handle it
+          }
         }
       } else {
-        // PDF already exists, share it directly
-        const blob = new Blob([pdf], { type: 'application/pdf' });
-        const file = new File([blob], `${clientName}-certificado.pdf`, {
-          type: 'application/pdf',
-        });
-
-        try {
-          await navigator.share({
-            title: 'Certificado de Garantia de Higienização',
-            text: `Certificado de Garantia de Higienização para ${clientName}`,
-            files: [file],
-          });
-        } catch (shareError) {
-          console.error('Error during share with existing PDF:', shareError);
-        }
+        // Fallback for browsers that don't support sharing files
+        throw new Error("Your browser doesn't support sharing files directly.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sharing certificate:', error);
+      setShareError(error.message || 'Error sharing certificate');
+
+      // Create a fallback URL for sharing
+      if (pdf) {
+        const blob = new Blob([pdf], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${clientName}-certificado.pdf`;
+        document.body.appendChild(a);
+        a.click();
+
+        // Clean up
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+
+        setShareError(
+          'Baixamos o PDF para você. Por favor, use-o para compartilhar manualmente.',
+        );
+      }
     } finally {
       setIsGenerating(false);
     }
   };
 
   return (
-    <Button
-      onClick={handleShare}
-      disabled={isGenerating}
-      size="sm"
-      className="inline-flex items-center justify-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      {isGenerating ? (
-        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-      ) : (
-        <Share className="h-4 w-4" />
+    <div className="flex flex-col">
+      <Button
+        onClick={handleShare}
+        disabled={isGenerating}
+        size="sm"
+        className="inline-flex items-center justify-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isGenerating ? (
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+        ) : (
+          <Share className="h-4 w-4" />
+        )}
+        Compartilhar
+      </Button>
+
+      {shareError && (
+        <div className="mt-2 text-sm text-red-500">{shareError}</div>
       )}
-      Compartilhar
-    </Button>
+    </div>
   );
 }
