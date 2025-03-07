@@ -46,12 +46,12 @@ export default function ShareButton({
         setPdf(imageData);
       }
 
-      // Create blob with image/jpeg MIME type
-      const blob = new Blob([imageData], { type: 'image/jpeg' });
+      // Create blob with image/png MIME type
+      const blob = new Blob([imageData], { type: 'image/png' });
 
-      // Create file with .jpg extension
-      const file = new File([blob], `${clientName}-certificado.jpg`, {
-        type: 'image/jpeg',
+      // Create file with .png extension
+      const file = new File([blob], `${clientName}-certificado.png`, {
+        type: 'image/png',
         lastModified: new Date().getTime(),
       });
 
@@ -84,11 +84,11 @@ export default function ShareButton({
 
       // Fallback to download when sharing fails
       if (pdf) {
-        const blob = new Blob([pdf], { type: 'image/jpeg' });
+        const blob = new Blob([pdf], { type: 'image/png' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${clientName}-certificado.jpg`;
+        a.download = `${clientName}-certificado.png`;
         document.body.appendChild(a);
         a.click();
 
