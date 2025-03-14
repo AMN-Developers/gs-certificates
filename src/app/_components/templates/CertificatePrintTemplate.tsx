@@ -26,8 +26,8 @@ export default function CertificatePrintTemplate({
         <Image
           src={logo}
           alt="G&S Home Solutions Logo"
-          width={100}
-          height={100}
+          width={70}
+          height={70}
           className="w-auto"
           priority
         />
@@ -38,7 +38,7 @@ export default function CertificatePrintTemplate({
 
       {/* Certificate Content */}
       <div className="grid flex-1 grid-cols-2 gap-6 text-base">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col items-center gap-3 p-5">
           <p>
             Certificamos que a superfície foi higienizada com o Power Trio da
             G&S Home Solutions.
@@ -46,7 +46,7 @@ export default function CertificatePrintTemplate({
           <p>
             Esta higienização garante que a superfície têxtil esteja livre de
             bactérias, conforme testes realizados seguindo as normas têxteis
-            internacionais método ASTM E2419-13.
+            internacionais método ASTM E2149-13.
           </p>
           <p>
             Todos os produtos componentes do Power Trio G&S são notificados pela
@@ -55,14 +55,14 @@ export default function CertificatePrintTemplate({
           <Image
             src={astm}
             alt="ASTM Certification"
-            width={70}
-            height={70}
-            className="mt-1 self-center"
+            width={100}
+            height={100}
+            className=""
             priority
           />
         </div>
 
-        <div className="flex flex-col gap-3 rounded-lg bg-shades-wave bg-cover bg-no-repeat p-5">
+        <div className="flex flex-col justify-between gap-3 rounded-lg bg-shades-wave bg-cover bg-no-repeat p-5">
           <p>
             Certificamos também que os produtos são homologados pela SVB
             (Sociedade Vegana Brasileira). Cuidamos da saúde do seu lar, sem
@@ -72,16 +72,16 @@ export default function CertificatePrintTemplate({
             <Image
               src={qrVegan}
               alt="Selo Vegano"
-              width={70}
-              height={70}
+              width={100}
+              height={100}
               className="w-auto"
               priority
             />
-            <p className="text-center text-xs italic">
-              Esta é uma parcela de cuidado com o nosso planeta que você nos
-              ajudou a garantir.
-            </p>
           </div>
+          <p className="text-center text-xs italic">
+            Esta é uma parcela de cuidado com o nosso planeta que você nos
+            ajudou a garantir.
+          </p>
         </div>
       </div>
 

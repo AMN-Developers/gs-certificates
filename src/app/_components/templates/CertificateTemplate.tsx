@@ -32,11 +32,11 @@ export default function CertificateTemplate({
     try {
       setIsGenerating(true);
       if (pdf) {
-        const blob = new Blob([pdf], { type: 'application/pdf' });
+        const blob = new Blob([pdf], { type: 'image/png' });
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${clientName}-certificado.pdf`;
+        link.download = `${clientName}-certificado.png`;
         link.click();
         return;
       }
@@ -50,11 +50,11 @@ export default function CertificateTemplate({
       }
       const uint8Array = new Uint8Array(data.pdf);
       setPdf(uint8Array);
-      const blob = new Blob([uint8Array], { type: 'application/pdf' });
+      const blob = new Blob([uint8Array], { type: 'immage/png' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${clientName}-certificado.pdf`;
+      link.download = `${clientName}-certificado.png`;
       link.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -135,21 +135,23 @@ export default function CertificateTemplate({
             className="flex min-h-[595px] w-full flex-col gap-8 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] p-8 text-white sm:p-12"
           >
             {/* Certificate Header */}
-            <div className="flex flex-col items-center gap-6">
+            <div className="flex flex-col items-center gap-3">
               <Image
                 src={logo}
                 alt="G&S Home Solutions Logo"
-                className="h-24 w-auto sm:h-32"
+                width={70}
+                height={70}
+                className="w-auto"
                 priority
               />
-              <h1 className="text-center text-2xl font-bold sm:text-3xl md:text-4xl">
+              <h1 className="text-center text-3xl font-bold">
                 Certificado de Garantia de Higienização
               </h1>
             </div>
 
             {/* Certificate Content */}
-            <div className="grid flex-1 grid-cols-1 gap-8 sm:grid-cols-2">
-              <div className="flex flex-col gap-4 text-base sm:text-lg">
+            <div className="grid flex-1 grid-cols-2 gap-6 text-base">
+              <div className="flex flex-col items-center gap-3 p-5">
                 <p>
                   Certificamos que a superfície foi higienizada com o Power Trio
                   da G&S Home Solutions.
@@ -157,7 +159,7 @@ export default function CertificateTemplate({
                 <p>
                   Esta higienização garante que a superfície têxtil esteja livre
                   de bactérias, conforme testes realizados seguindo as normas
-                  têxteis internacionais método ASTM E2419-13.
+                  têxteis internacionais método ASTM E2149-13.
                 </p>
                 <p>
                   Todos os produtos componentes do Power Trio G&S são
@@ -167,35 +169,39 @@ export default function CertificateTemplate({
                 <Image
                   src={astm}
                   alt="ASTM Certification"
-                  className="mt-4 h-24 w-auto self-center"
+                  width={100}
+                  height={100}
+                  className=""
                   priority
                 />
               </div>
 
-              <div className="flex flex-col gap-4 rounded-lg bg-shades-wave bg-cover bg-no-repeat p-6 text-base sm:text-lg">
+              <div className="flex flex-col justify-between gap-3 rounded-lg bg-shades-wave bg-cover bg-no-repeat p-5">
                 <p>
                   Certificamos também que os produtos são homologados pela SVB
                   (Sociedade Vegana Brasileira). Cuidamos da saúde do seu lar,
                   sem agredir o meio ambiente e respeitando a vida dos animais.
                 </p>
-                <div className="flex flex-col items-center gap-4">
+                <div className="flex flex-col items-center gap-3">
                   <Image
                     src={qrVegan}
                     alt="Selo Vegano"
-                    className="h-20 w-auto"
+                    width={100}
+                    height={100}
+                    className="w-auto"
                     priority
                   />
-                  <p className="text-center text-sm italic">
-                    Esta é uma parcela de cuidado com o nosso planeta que você
-                    nos ajudou a garantir.
-                  </p>
                 </div>
+                <p className="text-center text-xs italic">
+                  Esta é uma parcela de cuidado com o nosso planeta que você nos
+                  ajudou a garantir.
+                </p>
               </div>
             </div>
 
             {/* Certificate Footer */}
-            <div className="mt-8 flex flex-col justify-between gap-4 border-t border-white/20 pt-8 sm:flex-row">
-              <div className="flex flex-col gap-2 text-sm sm:text-base">
+            <div className="flex justify-between gap-4 border-t border-white/20 pt-3">
+              <div className="flex flex-col gap-1 text-sm">
                 <p>Cliente: {clientName}</p>
                 <p>
                   Data:{' '}
