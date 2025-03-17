@@ -126,9 +126,13 @@ export default function CreateCertificateForm() {
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date('1900-01-01')
-                      }
+                      disabled={(date) => {
+                        const today = new Date();
+                        const sevenDaysAgo = new Date();
+                        sevenDaysAgo.setDate(today.getDate() - 7);
+
+                        return date > today || date < sevenDaysAgo;
+                      }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -170,7 +174,7 @@ export default function CreateCertificateForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-medium text-gray-700">
-                  Responsável técnico
+                  Técnico aplicador
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -180,7 +184,7 @@ export default function CreateCertificateForm() {
                     <Input
                       {...field}
                       className="pl-10"
-                      placeholder="Digite o nome do responsável..."
+                      placeholder="Digite o nome do técnico..."
                       disabled={isPending}
                     />
                   </div>
