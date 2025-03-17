@@ -4,8 +4,6 @@ import Image from 'next/image';
 import { Button } from '@components/ui/button';
 import { Download } from 'lucide-react';
 import logo from '@assets/logo.png';
-import qrVegan from '@assets/qrVegan.png';
-import astm from '@assets/astm.png';
 import { generateCertificatePDF } from '@/app/certificados/[certificateId]/action';
 import ShareButton from '@/app/_components/molecules/ShareButton';
 
@@ -118,16 +116,14 @@ export default function CertificateTemplate({
             setIsGenerating={setIsGenerating}
           />
         </div>
-
-
       </div>
 
       {/* Certificate Preview */}
       <div className="relative w-full overflow-hidden rounded-lg bg-white shadow-lg">
-        <div className=" w-full">
+        <div className="w-full">
           <div
             ref={certificateRef}
-            className="flex  w-full flex-col gap-8 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] p-8 text-white sm:p-12"
+            className="flex w-full flex-col gap-8 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] p-8 text-white sm:p-12"
           >
             {/* Certificate Header */}
             <div className="flex flex-col items-center gap-3">
@@ -136,10 +132,10 @@ export default function CertificateTemplate({
                 alt="G&S Home Solutions Logo"
                 width={70}
                 height={70}
-                className="w-auto size-28"
+                className="size-28 w-auto"
                 priority
               />
-              <h1 className="text-center text-xl md:text-2xl font-bold">
+              <h1 className="text-center text-xl font-bold md:text-2xl">
                 Certificado de Garantia de Higienização gerado com sucesso
               </h1>
             </div>
@@ -159,7 +155,6 @@ export default function CertificateTemplate({
                 <p>Empresa: {companyName}</p>
                 <p>Técnico Aplicador: {technichalResponsible}</p>
               </div>
-              
             </div>
           </div>
         </div>
