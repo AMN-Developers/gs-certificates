@@ -4,8 +4,6 @@ import Image from 'next/image';
 import { Button } from '@components/ui/button';
 import { Download } from 'lucide-react';
 import logo from '@assets/logo.png';
-import qrVegan from '@assets/qrVegan.png';
-import astm from '@assets/astm.png';
 import { generateCertificatePDF } from '@/app/certificados/[certificateId]/action';
 import ShareButton from '@/app/_components/molecules/ShareButton';
 
