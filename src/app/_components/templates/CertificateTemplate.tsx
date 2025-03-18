@@ -138,6 +138,10 @@ export default function CertificateTemplate({
               <h1 className="text-center text-xl font-bold md:text-2xl">
                 Certificado de Garantia de Higienização gerado com sucesso
               </h1>
+              <p className="font-bold">
+                Baixe no seu dispositivo ou compartilhe diretamente o
+                certificado com seu cliente nos botões acima.
+              </p>
             </div>
 
             {/* Certificate Footer */}
