@@ -1,3 +1,4 @@
+import { UsersRepository } from '@/repositories/userRepository';
 import { UsersService } from '@/services/usersService';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -12,6 +13,7 @@ export const authenticatedProcedure = createServerActionProcedure().handler(
     }
 
     const userService = new UsersService();
+    const userRepository = new UsersRepository();
 
     const user = await userService.verifyToken(token);
 
@@ -19,6 +21,13 @@ export const authenticatedProcedure = createServerActionProcedure().handler(
       redirect('/');
     }
 
-    return user;
+    const certificateTokens = await userRepository.findTokenBalancesByUserId(
+      user.id,
+    );
+
+    return {
+      userId: user.id,
+      certificateTokens,
+    };
   },
 );

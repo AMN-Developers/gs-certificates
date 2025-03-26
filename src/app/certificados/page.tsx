@@ -81,24 +81,24 @@ export default function Certificates() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {data?.certificateTokens ? (
-              Object.entries(data.certificateTokens).map(([key, value]) => (
+            {(data?.certificateTokens?.length ?? 0 > 0) ? (
+              data?.certificateTokens.map((token) => (
                 <div
-                  key={key}
+                  key={token.type}
                   className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-brand to-[#1a237e] p-6 shadow-lg transition-all hover:shadow-xl"
                 >
                   <div className="relative z-10 flex h-full flex-col justify-between gap-4">
                     <div>
                       <h3 className="text-lg font-bold uppercase text-white">
-                        {key}
+                        {token.type}
                       </h3>
                       <p className="mt-2 text-white/90">
-                        {value} certificados disponíveis
+                        {token.balance} certificados disponíveis
                       </p>
                     </div>
 
                     <Link
-                      href={`/certificados/novo?token=${key}`}
+                      href={`/certificados/novo?token=${token.type}`}
                       className="inline-flex w-full items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-brand shadow-sm transition-colors hover:bg-gray-50"
                     >
                       Emitir certificado

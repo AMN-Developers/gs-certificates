@@ -30,13 +30,21 @@ import { cn } from '@lib/utils';
 import { createCertificateSchema } from '@lib/validation-shemas/create-certificate';
 import { createCertificate } from '@/app/certificados/novo/action';
 
-export default function CreateCertificateForm() {
+export default function CreateCertificateForm({
+  type,
+}: {
+  type: 'higienizacao' | 'impermeabilizacao';
+}) {
+  console.log(type);
   const router = useRouter();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof createCertificateSchema>>({
-    mode: 'onChange',
+    mode: 'all',
     resolver: zodResolver(createCertificateSchema),
+    defaultValues: {
+      type,
+    },
   });
 
   const { execute, isPending } = useServerAction(createCertificate, {

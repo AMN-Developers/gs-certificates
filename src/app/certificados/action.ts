@@ -8,11 +8,12 @@ export const getUser = authenticatedProcedure
   .output(
     z.object({
       id: z.number(),
-      certificateTokens: z
-        .object({
-          higienizacao: z.number().optional(),
-        })
-        .optional(),
+      certificateTokens: z.array(
+        z.object({
+          type: z.string(),
+          balance: z.number(),
+        }),
+      ),
     }),
   )
   .handler(async ({ ctx }) => {

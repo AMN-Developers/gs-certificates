@@ -29,4 +29,5 @@ export const createCertificateSchema = z.object({
     .min(3, {
       message: 'Técnico aplicador deve ter pelo menos 3 caracteres',
     }),
+  type: z.enum(['higienizacao', 'impermeabilizacao']),
 });

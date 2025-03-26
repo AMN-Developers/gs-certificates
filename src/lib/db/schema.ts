@@ -1,17 +1,17 @@
 import {
   pgTable,
+  pgEnum,
   serial,
   integer,
   varchar,
   timestamp,
   foreignKey,
+  unique,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-// User table
 export const users = pgTable('user', {
   id: integer('id').primaryKey().notNull(),
-  certificateTokenId: integer('certificateTokenId'),
   createdAt: timestamp('createdAt', {
     precision: 3,
     mode: 'date',
@@ -22,23 +22,21 @@ export const users = pgTable('user', {
   }).defaultNow(),
 });
 
-// CertificateTokens table
-export const certificateTokens = pgTable(
-  'certificate_tokens',
+export const certificateType = pgEnum('certificate_type', [
+  'higienizacao',
+  'impermeabilizacao',
+]);
+
+export const tokenBalance = pgTable(
+  'token_balance',
   {
     id: serial('id').primaryKey().notNull(),
+    type: certificateType().notNull().default('higienizacao'),
+    balance: integer().default(0).notNull(),
     userId: integer('user_id').notNull(),
-    higienizacao: integer('higienizacao').default(0).notNull(),
-    createdAt: timestamp('createdAt', {
-      precision: 3,
-      mode: 'date',
-    }).defaultNow(),
-    updatedAt: timestamp('updatedAt', {
-      precision: 3,
-      mode: 'date',
-    }).defaultNow(),
   },
   (table) => ({
+    uniqUserType: unique().on(table.userId, table.type),
     userFk: foreignKey({
       columns: [table.userId],
       foreignColumns: [users.id],
@@ -46,7 +44,6 @@ export const certificateTokens = pgTable(
   }),
 );
 
-// Certificate table
 export const certificates = pgTable(
   'certificate',
   {
@@ -54,6 +51,7 @@ export const certificates = pgTable(
     encryptedData: varchar('encryptedData', { length: 1000 }).notNull(),
     issuedAt: timestamp('issuedAt', { precision: 3, mode: 'date' }).notNull(),
     userId: integer('user_id').notNull(),
+    type: certificateType().default('higienizacao').notNull(),
   },
   (table) => ({
     userFk: foreignKey({
@@ -63,24 +61,17 @@ export const certificates = pgTable(
   }),
 );
 
-// Relationships
-export const usersRelations = relations(users, ({ one, many }) => ({
-  certificateTokens: one(certificateTokens, {
-    fields: [users.certificateTokenId],
-    references: [certificateTokens.id],
-  }),
+export const usersRelations = relations(users, ({ many }) => ({
   certificates: many(certificates),
+  tokenBalances: many(tokenBalance),
 }));
 
-export const certificateTokensRelations = relations(
-  certificateTokens,
-  ({ one }) => ({
-    user: one(users, {
-      fields: [certificateTokens.userId],
-      references: [users.id],
-    }),
+export const tokenBalanceRelations = relations(tokenBalance, ({ one }) => ({
+  user: one(users, {
+    fields: [tokenBalance.userId],
+    references: [users.id],
   }),
-);
+}));
 
 export const certificatesRelations = relations(certificates, ({ one }) => ({
   user: one(users, {
