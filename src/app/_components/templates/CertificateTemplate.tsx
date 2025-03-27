@@ -6,6 +6,8 @@ import { Download } from 'lucide-react';
 import logo from '@assets/logo.png';
 import { generateCertificatePDF } from '@/app/certificados/[certificateId]/action';
 import ShareButton from '@/app/_components/molecules/ShareButton';
+import { Products } from '@/dtos/certificate';
+import { CertificateType } from './DynamicTemplate';
 
 type TCertificateTemplateProps = {
   certificate: {
@@ -13,6 +15,8 @@ type TCertificateTemplateProps = {
     clientName: string;
     companyName: string;
     technichalResponsible: string;
+    product: Products;
+    type: CertificateType;
   };
   certificateNumber: string;
 };
@@ -24,7 +28,8 @@ export default function CertificateTemplate({
   const [isGenerating, setIsGenerating] = useState(false);
   const [pdf, setPdf] = useState<Uint8Array | null>(null);
   const certificateRef = useRef<HTMLDivElement>(null);
-  const { date, clientName, companyName, technichalResponsible } = certificate;
+  const { date, clientName, companyName, technichalResponsible, type } =
+    certificate;
 
   const handleDownload = async () => {
     try {
@@ -136,7 +141,7 @@ export default function CertificateTemplate({
                 priority
               />
               <h1 className="text-center text-xl font-bold md:text-2xl">
-                Certificado de Garantia de Higienização gerado com sucesso
+                Certificado de Garantia de {type} gerado com sucesso
               </h1>
               <p className="font-bold">
                 Baixe no seu dispositivo ou compartilhe diretamente o

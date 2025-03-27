@@ -7,7 +7,7 @@ const Templates = {
   impermeabilizacao: CertificateImpersPrintTemplate,
 };
 
-type CertificateType = keyof typeof Templates;
+export type CertificateType = keyof typeof Templates;
 
 interface DynamicTemplateProps {
   certificate: {
