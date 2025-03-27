@@ -22,7 +22,6 @@ export class UpsertTokenBalanceUseCase {
     userId: number,
     tokens: Record<string, number>,
   ): Promise<UpsertTokenBalanceResult> {
-    console.log(tokens);
 
     try {
       const user = await this.userRepository.findById(userId);
