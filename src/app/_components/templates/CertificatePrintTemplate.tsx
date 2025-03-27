@@ -20,7 +20,7 @@ export default function CertificatePrintTemplate({
   const { date, clientName, companyName, technichalResponsible } = certificate;
 
   return (
-    <div className="fixed inset-0 flex max-h-screen flex-col gap-4 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] p-10 text-white">
+    <div className="fixed inset-0 flex flex-col gap-4 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] p-10 text-white">
       {/* Certificate Header */}
       <div className="flex flex-col items-center gap-3">
         <Image
