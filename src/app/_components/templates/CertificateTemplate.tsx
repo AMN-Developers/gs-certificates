@@ -94,6 +94,13 @@ export default function CertificateTemplate({
     }
   }, [certificateNumber, pdf]);
 
+  const getCertificateType = (type: CertificateType) => {
+    if (type === 'impermeabilizacao') {
+      return 'Impermeabilização';
+    }
+    return 'Higienização';
+  };
+
   return (
     <>
       {/* Actions Section */}
@@ -141,7 +148,8 @@ export default function CertificateTemplate({
                 priority
               />
               <h1 className="text-center text-xl font-bold md:text-2xl">
-                Certificado de Garantia de {type} gerado com sucesso
+                Certificado de Garantia de {getCertificateType(type)} gerado com
+                sucesso
               </h1>
               <p className="font-bold">
                 Baixe no seu dispositivo ou compartilhe diretamente o
