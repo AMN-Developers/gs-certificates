@@ -25,7 +25,7 @@ export default function CertificateImpersPrintTemplate({
 
   return (
     <div
-      className={`fixed inset-0 flex flex-col gap-4 bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff] p-10 text-white ${montserrat.className}`}
+      className={`fixed inset-0 flex min-h-screen flex-col gap-4 bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff] p-10 text-white ${montserrat.className}`}
     >
       <div className="flex flex-col items-center gap-3">
         <Image
@@ -40,13 +40,13 @@ export default function CertificateImpersPrintTemplate({
         </h1>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-1 gap-y-4">
+      <div className="grid flex-1 grid-cols-2 gap-5 text-[0.6rem]">
         {/* Benefícios */}
-        <section className="rounded-lg bg-black bg-opacity-15 px-10 py-4">
-          <h2 className="mb-4 text-center text-[8px] font-bold">
+        <section className="flex flex-col items-center rounded-lg bg-black bg-opacity-15 p-5">
+          <h2 className="mb-4 text-center font-bold">
             Benefícios da Impermeabilização
           </h2>
-          <p className="text-[8px] font-thin leading-relaxed">
+          <p className="font-light leading-relaxed">
             A linha de impermeabilizantes Lótus oferece proteção excepcional aos
             tecidos contra a penetração de líquidos à base de água, óleo,
             líquidos alcoólicos com teor até 40° e líquidos quentes com
@@ -71,9 +71,9 @@ export default function CertificateImpersPrintTemplate({
         </section>
 
         {/* Garantia */}
-        <section className="px-10 py-4">
-          <h2 className="mb-4 text-[8px] font-bold">Garantia</h2>
-          <p className="text-[8px]">
+        <section className="flex flex-col">
+          <h2 className="mb-4 font-bold">Garantia</h2>
+          <p className="">
             A impermeabilização com produtos da linha Lótus oferece garantia de
             até 1 ano, com exceção de casos envolvendo urina humana ou animal,
             tintas, graxas, produtos químicos e seus derivados.
@@ -108,16 +108,16 @@ export default function CertificateImpersPrintTemplate({
         </section>
 
         {/* Manutenção */}
-        <section className="px-10 py-4">
-          <h2 className="mb-4 text-[8px] font-bold">
+        <section className="flex flex-col">
+          <h2 className="mb-4 font-bold">
             Manutenção e Cuidados Após a Aplicação
           </h2>
-          <p className="text-[8px]">
+          <p>
             Para garantir a durabilidade e eficácia da impermeabilização, é
             fundamental seguir as recomendações abaixo:
           </p>
-          <ul className="mt-2 text-left text-[8px]">
-            <li className="mb-2">
+          <ul className="flex flex-col text-left">
+            <li>
               - <strong>Aspiração Regular:</strong> Aspire o estofado
               semanalmente para manter a vida útil do tecido e a eficácia da
               proteção impermeabilizante. O acúmulo excessivo de poeira ou pelos
@@ -125,21 +125,21 @@ export default function CertificateImpersPrintTemplate({
               partículas possuem a capacidade de absorver água e se acumular na
               superfície do tecido.
             </li>
-            <li className="mb-2">
+            <li>
               - <strong>Produtos Não Recomendados:</strong> Evite aplicar sprays
               odorizadores de tecidos/ambientes, home sprays ou amaciante
               diluído em água. Estes produtos contêm substâncias que podem
               danificar a camada impermeabilizante, comprometendo a proteção do
               tecido.
             </li>
-            <li className="mb-2">
+            <li>
               - <strong>Derramamento de Líquidos:</strong> Em caso de
               derramamento de líquidos, remova imediatamente com um papel
               absorvente. Deixe o papel em contato com o líquido até que a
               absorção total seja alcançada por capilaridade. Nunca pressione ou
               esfregue o papel sobre o tecido e evite o uso de panos.
             </li>
-            <li className="mb-2">
+            <li>
               - <strong>Manchas e Sujidades:</strong> Embora a impermeabilização
               ofereça proteção, algumas manchas podem ocorrer, como sombreamento
               após a remoção de líquidos pastosos, marcas de patinhas de
@@ -157,13 +157,13 @@ export default function CertificateImpersPrintTemplate({
         </section>
 
         {/* Responsabilidades + Formulário */}
-        <section className="flex h-full flex-col justify-between px-10 py-4">
-          <div className="mb-4">
-            <h2 className="mb-4 text-[8px] font-bold">
+        <section className="flex flex-col justify-between">
+          <div>
+            <h2 className="mb-4 font-bold">
               Responsabilidades da Empresa Aplicadora
             </h2>
 
-            <p className="text-[8px]">
+            <p>
               A impermeabilização do tecido pode ser realizada na própria
               residência ou em local definido pelo técnico.
               <br />
@@ -186,11 +186,11 @@ export default function CertificateImpersPrintTemplate({
           </div>
 
           <div className="flex w-full rounded-lg bg-black bg-opacity-15 py-4 pl-2">
-            <div className="flex flex-col gap-4 text-[8px]">
+            <div className="flex flex-col gap-2">
               <div>
                 <p className="font-semibold">
                   Data:{' '}
-                  <span className="font-thin">
+                  <span className="font-light">
                     {new Date(date).toLocaleDateString('pt-BR', {
                       day: '2-digit',
                       month: 'long',
@@ -202,30 +202,31 @@ export default function CertificateImpersPrintTemplate({
               <div>
                 <p className="font-semibold">
                   Nome do cliente:{' '}
-                  <span className="font-thin">{clientName}</span>
+                  <span className="font-light">{clientName}</span>
                 </p>
               </div>
               <div>
                 <p className="font-semibold">
-                  Produto aplicado: <span className="font-thin">{product}</span>
+                  Produto aplicado:{' '}
+                  <span className="font-light">{product}</span>
                 </p>
               </div>
               <div>
                 <p className="font-semibold">
                   Empresa aplicadora:{' '}
-                  <span className="font-thin">{companyName}</span>
+                  <span className="font-light">{companyName}</span>
                 </p>
               </div>
               <div className="col-span-2">
                 <p className="font-semibold">
                   Técnico aplicador:{' '}
-                  <span className="font-thin">{technichalResponsible}</span>
+                  <span className="font-light">{technichalResponsible}</span>
                 </p>
               </div>
             </div>
           </div>
           <div className="col-span-2 pt-2">
-            <p className="text-[8px] font-thin">{certificateNumber} </p>
+            <p className="font-light">{certificateNumber} </p>
           </div>
         </section>
       </div>
