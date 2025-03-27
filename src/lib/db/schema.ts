@@ -44,6 +44,14 @@ export const tokenBalance = pgTable(
   }),
 );
 
+export const products = pgEnum('products', [
+  'Impertudo',
+  'Safe',
+  'Safe Tech',
+  'Eco',
+  'Tech Block',
+]);
+
 export const certificates = pgTable(
   'certificate',
   {
@@ -52,6 +60,7 @@ export const certificates = pgTable(
     issuedAt: timestamp('issuedAt', { precision: 3, mode: 'date' }).notNull(),
     userId: integer('user_id').notNull(),
     type: certificateType().default('higienizacao').notNull(),
+    product: products(),
   },
   (table) => ({
     userFk: foreignKey({

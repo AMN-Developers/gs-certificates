@@ -2,7 +2,7 @@ import { and, eq } from 'drizzle-orm';
 import { users, tokenBalance } from '../lib/db/schema';
 import type { DB } from '@/lib/db';
 import { db } from '@/lib/db';
-import { IUsersRepository } from '.';
+import type { IUsersRepository } from '.';
 
 export type TokenType = 'higienizacao' | 'impermeabilizacao';
 

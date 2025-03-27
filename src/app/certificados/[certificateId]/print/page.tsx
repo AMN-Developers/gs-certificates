@@ -1,5 +1,5 @@
+import DynamicTemplate from '@/app/_components/templates/DynamicTemplate';
 import { retrieveCertificateById } from '../action';
-import CertificatePrintTemplate from '@/app/_components/templates/CertificatePrintTemplate';
 
 export default async function CertificatePrint({
   params,
@@ -15,9 +15,10 @@ export default async function CertificatePrint({
   }
 
   return (
-    <CertificatePrintTemplate
+    <DynamicTemplate
       certificate={data.certificate}
       certificateNumber={params.certificateId}
+      type={data.certificate.type}
     />
   );
 }
