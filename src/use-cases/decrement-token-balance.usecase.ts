@@ -1,4 +1,4 @@
-import { IUsersRepository } from '@/repositories';
+import type { IUsersRepository } from '@/repositories';
 import { UsersRepository } from '@/repositories/userRepository';
 
 type DecrementTokenBalanceResult = {

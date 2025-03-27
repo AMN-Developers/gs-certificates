@@ -1,6 +1,7 @@
 import { Montserrat } from 'next/font/google';
 import logo from '@assets/logo.png';
 import Image from 'next/image';
+import { Products } from '@/dtos/certificate';
 
 type TCertificatePrintTemplateProps = {
   certificate: {
@@ -8,7 +9,7 @@ type TCertificatePrintTemplateProps = {
     clientName: string;
     companyName: string;
     technichalResponsible: string;
-    productApplied?: string;
+    product: Products;
   };
   certificateNumber: string;
 };
@@ -17,15 +18,9 @@ const montserrat = Montserrat({ subsets: ['latin'] });
 
 export default function CertificateImpersPrintTemplate({
   certificate,
-  certificateNumber,
 }: TCertificatePrintTemplateProps) {
-  const {
-    date,
-    clientName,
-    companyName,
-    technichalResponsible,
-    productApplied,
-  } = certificate;
+  const { clientName, companyName, technichalResponsible, product, date } =
+    certificate;
 
   return (
     <div
@@ -172,8 +167,8 @@ export default function CertificateImpersPrintTemplate({
               A impermeabilização do tecido pode ser realizada na própria
               residência ou em local definido pelo técnico.
               <br />
-              Todas as medidas de segurança e utilização de EPI's deverão ser
-              seguidas pelo técnico. Indicamos que pessoas sem os EPI's
+              Todas as medidas de segurança e utilização de EPI&apos;s deverão
+              ser seguidas pelo técnico. Indicamos que pessoas sem os EPI&apos;s
               adequados, crianças e animais não permaneçam no local durante a
               aplicação.
               <br />
@@ -193,7 +188,16 @@ export default function CertificateImpersPrintTemplate({
           <div className="flex w-full rounded-lg bg-black bg-opacity-15 py-4 pl-2">
             <div className="flex flex-col gap-4 text-sm">
               <div>
-                <p className="font-semibold">Data:</p>
+                <p className="font-semibold">
+                  Data:{' '}
+                  <span className="font-thin">
+                    {new Date(date).toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </p>
               </div>
               <div>
                 <p className="font-semibold">
@@ -203,8 +207,7 @@ export default function CertificateImpersPrintTemplate({
               </div>
               <div>
                 <p className="font-semibold">
-                  Produto aplicado:{' '}
-                  <span className="font-thin">{productApplied}</span>
+                  Produto aplicado: <span className="font-thin">{product}</span>
                 </p>
               </div>
               <div>

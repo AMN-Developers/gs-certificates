@@ -1,3 +1,4 @@
+import { Products } from '@/dtos/certificate';
 import CertificateImpersPrintTemplate from './CertificateImpersPrintTemplate';
 import CertificatePrintTemplate from './CertificatePrintTemplate';
 
@@ -14,6 +15,7 @@ interface DynamicTemplateProps {
     clientName: string;
     companyName: string;
     technichalResponsible: string;
+    product: Products;
   };
   certificateNumber: string;
   type: CertificateType;

@@ -1,7 +1,7 @@
-import { CertificateDTO } from '@/dtos/certificate';
-import { ICertificatesRepository, IUsersRepository } from '@/repositories';
+import { CertificateDTO, type Products } from '@/dtos/certificate';
+import type { ICertificatesRepository, IUsersRepository } from '@/repositories';
 import { CertificatesRepository } from '@/repositories/certificatesRepository';
-import { TokenType, UsersRepository } from '@/repositories/userRepository';
+import { type TokenType, UsersRepository } from '@/repositories/userRepository';
 import {
   decrypt,
   encrypt,
@@ -26,6 +26,7 @@ export class CertificatesService {
     technichalResponsible: string;
     userId: number;
     type: TokenType;
+    product: Products;
   }) {
     const user = await this._usersRepository.findById(certificate.userId);
 
@@ -65,6 +66,7 @@ export class CertificatesService {
         certificate.date,
         user.id,
         certificate.type,
+        certificate.product,
       ),
     );
 
@@ -89,7 +91,8 @@ export class CertificatesService {
       date: Date;
       companyName: string;
       technichalResponsible: string;
-      type: 'higienizacao' | 'impermeabilizacao';
+      type: TokenType;
+      product: Products;
     };
     try {
       decryptedData = JSON.parse(

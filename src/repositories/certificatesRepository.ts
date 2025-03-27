@@ -13,7 +13,8 @@ export class CertificatesRepository implements ICertificatesRepository {
   }
 
   async createCertificate(certificate: CertificateDTO) {
-    const { tokenHash, encryptedData, issuedAt, userId, type } = certificate;
+    const { tokenHash, encryptedData, issuedAt, userId, type, product } =
+      certificate;
 
     const [newCertificate] = await this.db
       .insert(certificates)
@@ -23,6 +24,7 @@ export class CertificatesRepository implements ICertificatesRepository {
         issuedAt,
         userId,
         type,
+        product,
       })
       .returning();
 
@@ -42,6 +44,7 @@ export class CertificatesRepository implements ICertificatesRepository {
       issuedAt: certificate.issuedAt,
       userId: certificate.userId,
       type: certificate.type,
+      product: certificate.product,
     });
   }
 }
