@@ -8,7 +8,7 @@ type TCertificatePrintTemplateProps = {
     clientName: string;
     companyName: string;
     technichalResponsible: string;
-    productApplied: string;
+    productApplied?: string;
   };
   certificateNumber: string;
 };
@@ -29,7 +29,7 @@ export default function CertificateImpersPrintTemplate({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center rounded-lg bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff] p-4 text-white shadow-lg ${montserrat.className}`}
+      className={`fixed inset-0 flex flex-col items-center justify-center rounded-lg bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff] p-4 text-white shadow-lg ${montserrat.className}`}
     >
       <div className="mb-8 text-center">
         <Image

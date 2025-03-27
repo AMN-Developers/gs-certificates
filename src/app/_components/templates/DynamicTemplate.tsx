@@ -1,0 +1,40 @@
+import CertificateImpersPrintTemplate from './CertificateImpersPrintTemplate';
+import CertificatePrintTemplate from './CertificatePrintTemplate';
+
+const Templates = {
+  higienizacao: CertificatePrintTemplate,
+  impermeabilizacao: CertificateImpersPrintTemplate,
+};
+
+type CertificateType = keyof typeof Templates;
+
+interface DynamicTemplateProps {
+  certificate: {
+    date: Date;
+    clientName: string;
+    companyName: string;
+    technichalResponsible: string;
+  };
+  certificateNumber: string;
+  type: CertificateType;
+}
+
+export default function DynamicTemplate({
+  type,
+  certificate,
+  certificateNumber,
+}: DynamicTemplateProps) {
+  const TemplateComponent = Templates[type];
+
+  if (!TemplateComponent) {
+    return <div>Template not found for type: {type}</div>;
+  }
+
+  return (
+    <TemplateComponent
+      certificate={certificate}
+      certificateNumber={certificateNumber}
+      key={type}
+    />
+  );
+}

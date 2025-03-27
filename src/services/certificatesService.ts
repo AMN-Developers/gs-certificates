@@ -89,6 +89,7 @@ export class CertificatesService {
       date: Date;
       companyName: string;
       technichalResponsible: string;
+      type: 'higienizacao' | 'impermeabilizacao';
     };
     try {
       decryptedData = JSON.parse(

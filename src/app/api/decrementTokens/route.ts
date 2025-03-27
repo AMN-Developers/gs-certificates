@@ -1,7 +1,6 @@
-import { OrderDTO } from '@/dtos/order';
 import { orderInputSchema } from '@/app/_lib/validation-shemas/order';
-import { OrdersService } from '@/services/ordersService';
 import { env } from '@/utils/env';
+import { DecrementTokenBalanceUseCase } from '@/use-cases/decrement-token-balance.usecase';
 
 export async function POST(req: Request) {
   const token = req.headers.get('Authorization');
@@ -22,22 +21,30 @@ export async function POST(req: Request) {
   }
 
   try {
-    const ordersService = new OrdersService();
+    const decrementTokenUseCase = new DecrementTokenBalanceUseCase();
+    const results = [];
 
     for (const order of data) {
-      const orderDTO = OrderDTO.fromDb(order);
-      await ordersService.decrementTokenQuantity(orderDTO);
+      const response = await decrementTokenUseCase.execute(
+        order.id,
+        order.tokens,
+      );
+      results.push(response);
     }
+
+    return new Response(JSON.stringify(results), {
+      status: 201,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   } catch (error) {
+    console.error('Error decrementing tokens:', error);
     return new Response(
-      `Failed to update order: ${error instanceof Error ? error.message : ''}`,
+      `Failed to update tokens: ${error instanceof Error ? error.message : 'Unknown error'}`,
       {
         status: 500,
       },
     );
   }
-
-  return new Response('Tokens updated successfully', {
-    status: 201,
-  });
 }
