@@ -25,7 +25,7 @@ export default function CertificateImpersPrintTemplate({
 
   return (
     <div
-      className={`fixed inset-0 flex min-h-screen w-full flex-col gap-4 bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff] p-10 text-white ${montserrat.className}`}
+      className={`fixed inset-0 flex flex-col gap-4 bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff] p-10 text-white ${montserrat.className}`}
     >
       <div className="flex flex-col items-center gap-3">
         <Image
@@ -33,10 +33,9 @@ export default function CertificateImpersPrintTemplate({
           alt="G&S Home Solutions Logo"
           width={70}
           height={70}
-          className="w-auto"
           priority
         />
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-xl font-bold">
           Certificado de Garantia de Impermeabilização
         </h1>
       </div>
@@ -44,10 +43,10 @@ export default function CertificateImpersPrintTemplate({
       <div className="grid grid-cols-2 gap-x-1 gap-y-4">
         {/* Benefícios */}
         <section className="rounded-lg bg-black bg-opacity-15 px-10 py-4">
-          <h2 className="mb-4 text-center text-xs font-bold">
+          <h2 className="mb-4 text-center text-[8px] font-bold">
             Benefícios da Impermeabilização
           </h2>
-          <p className="text-xs font-thin leading-relaxed">
+          <p className="text-[8px] font-thin leading-relaxed">
             A linha de impermeabilizantes Lótus oferece proteção excepcional aos
             tecidos contra a penetração de líquidos à base de água, óleo,
             líquidos alcoólicos com teor até 40° e líquidos quentes com
@@ -73,8 +72,8 @@ export default function CertificateImpersPrintTemplate({
 
         {/* Garantia */}
         <section className="px-10 py-4">
-          <h2 className="mb-4 text-xs font-bold">Garantia</h2>
-          <p className="text-xs">
+          <h2 className="mb-4 text-[8px] font-bold">Garantia</h2>
+          <p className="text-[8px]">
             A impermeabilização com produtos da linha Lótus oferece garantia de
             até 1 ano, com exceção de casos envolvendo urina humana ou animal,
             tintas, graxas, produtos químicos e seus derivados.
@@ -110,14 +109,14 @@ export default function CertificateImpersPrintTemplate({
 
         {/* Manutenção */}
         <section className="px-10 py-4">
-          <h2 className="mb-4 text-xs font-bold">
+          <h2 className="mb-4 text-[8px] font-bold">
             Manutenção e Cuidados Após a Aplicação
           </h2>
-          <p className="text-xs">
+          <p className="text-[8px]">
             Para garantir a durabilidade e eficácia da impermeabilização, é
             fundamental seguir as recomendações abaixo:
           </p>
-          <ul className="mt-2 text-left text-xs">
+          <ul className="mt-2 text-left text-[8px]">
             <li className="mb-2">
               - <strong>Aspiração Regular:</strong> Aspire o estofado
               semanalmente para manter a vida útil do tecido e a eficácia da
@@ -160,11 +159,11 @@ export default function CertificateImpersPrintTemplate({
         {/* Responsabilidades + Formulário */}
         <section className="flex h-full flex-col justify-between px-10 py-4">
           <div className="mb-4">
-            <h2 className="mb-4 text-xs font-bold">
+            <h2 className="mb-4 text-[8px] font-bold">
               Responsabilidades da Empresa Aplicadora
             </h2>
 
-            <p className="text-xs">
+            <p className="text-[8px]">
               A impermeabilização do tecido pode ser realizada na própria
               residência ou em local definido pelo técnico.
               <br />
@@ -187,7 +186,7 @@ export default function CertificateImpersPrintTemplate({
           </div>
 
           <div className="flex w-full rounded-lg bg-black bg-opacity-15 py-4 pl-2">
-            <div className="flex flex-col gap-4 text-xs">
+            <div className="flex flex-col gap-4 text-[8px]">
               <div>
                 <p className="font-semibold">
                   Data:{' '}
@@ -226,7 +225,7 @@ export default function CertificateImpersPrintTemplate({
             </div>
           </div>
           <div className="col-span-2 pt-2">
-            <p className="text-xs font-thin">{certificateNumber} </p>
+            <p className="text-[8px] font-thin">{certificateNumber} </p>
           </div>
         </section>
       </div>
