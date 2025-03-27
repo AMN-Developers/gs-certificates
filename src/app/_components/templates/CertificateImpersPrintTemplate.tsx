@@ -25,7 +25,7 @@ export default function CertificateImpersPrintTemplate({
 
   return (
     <div
-      className={`fixed inset-0 flex max-h-screen flex-col gap-4 bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff] p-10 text-white ${montserrat.className}`}
+      className={`flex min-h-screen w-full flex-col gap-4 bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff] p-10 text-white ${montserrat.className}`}
     >
       <div className="flex flex-col items-center gap-3">
         <Image
@@ -41,7 +41,7 @@ export default function CertificateImpersPrintTemplate({
         </h1>
       </div>
 
-      <div className="grid flex-1 grid-cols-2 gap-x-1 gap-y-4">
+      <div className="grid grid-cols-2 gap-x-1 gap-y-4">
         {/* Benefícios */}
         <section className="rounded-lg bg-black bg-opacity-15 px-10 py-4">
           <h2 className="mb-4 text-center text-xs font-bold">
