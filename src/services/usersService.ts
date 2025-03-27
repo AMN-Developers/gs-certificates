@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { UserDTO } from '@/dtos/user';
-import { IUsersRepository } from '@/repositories';
+import type { IUsersRepository } from '@/repositories';
 import { UsersRepository } from '@/repositories/userRepository';
 import { env } from '@/utils/env';
 
@@ -12,16 +11,14 @@ export class UsersService {
   }
 
   async retrieveUserById(userId: number) {
-    const userFromDb = await this.usersRepository.retrieveUserById(
-      new UserDTO(userId),
-    );
+    const userFromDb = await this.usersRepository.findById(userId);
 
-    if (!userFromDb || !userFromDb.userId) {
+    if (!userFromDb) {
       throw new Error('Usuário não encontrado!');
     }
     const token = jwt.sign(
       {
-        userId: userFromDb.userId,
+        userId: userFromDb.id,
       },
       env.JWT_SECRET,
     );
@@ -36,9 +33,7 @@ export class UsersService {
       throw new Error('Invalid token');
     }
 
-    const user = await this.usersRepository.retrieveUserById(
-      new UserDTO(decoded.userId),
-    );
+    const user = await this.usersRepository.findById(decoded.userId);
 
     return user;
   }

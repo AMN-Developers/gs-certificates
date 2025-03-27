@@ -1,101 +1,109 @@
-import { eq } from 'drizzle-orm';
-import {
-  users,
-  certificateTokens as certificateTokensSchema,
-} from '../lib/db/schema';
+import { and, eq } from 'drizzle-orm';
+import { users, tokenBalance } from '../lib/db/schema';
 import type { DB } from '@/lib/db';
 import { db } from '@/lib/db';
-import { UserDTO } from '@/dtos/user';
-import { IUsersRepository } from '.';
+import type { IUsersRepository } from '.';
+
+export type TokenType = 'higienizacao' | 'impermeabilizacao';
 
 export class UsersRepository implements IUsersRepository {
   private db: DB;
 
-  constructor() {
-    this.db = db;
+  constructor(database?: DB) {
+    this.db = database || db;
   }
 
-  async createUserData(userData: UserDTO): Promise<UserDTO> {
-    const [user] = await db
+  /**
+   * Create a new user in the database
+   */
+  async createUser(userId: number): Promise<{ id: number }> {
+    const [user] = await this.db
       .insert(users)
-      .values({
-        id: userData.userId,
-      })
+      .values({ id: userId })
       .returning();
 
-    return UserDTO.fromDb(user.id);
+    return user;
   }
 
-  async updateUserCertificateToken(userData: {
-    userId: number;
-    certificateTokenId: number;
-  }): Promise<UserDTO> {
-    const { userId, certificateTokenId } = userData;
-
-    await this.db
-      .update(users)
-      .set({
-        certificateTokenId,
-      })
-      .where(eq(users.id, userId));
-
-    return UserDTO.fromDb(userId);
-  }
-
-  async retrieveUserById(userData: UserDTO) {
-    const { userId } = userData;
-
+  /**
+   * Find a user by ID
+   */
+  async findById(userId: number): Promise<{ id: number }> {
     const [user] = await this.db
       .select({
         id: users.id,
-        certificateTokens: Object.keys(certificateTokensSchema).reduce(
-          (acc, key) => ({
-            ...acc,
-            [key]:
-              certificateTokensSchema[
-                key as keyof typeof certificateTokensSchema
-              ],
-          }),
-          {},
-        ),
-      })
-      .from(users)
-      .leftJoin(
-        certificateTokensSchema,
-        eq(users.certificateTokenId, certificateTokensSchema.id),
-      )
-      .where(eq(users.id, userId))
-      .limit(1);
-
-    return UserDTO.fromDb(user?.id as number, user?.certificateTokens);
-  }
-
-  async updateTokenQuantity(userData: {
-    userId: number;
-    certificateTokens: { [key: string]: number };
-  }) {
-    const { userId, certificateTokens } = userData;
-
-    const [user] = await this.db
-      .select({
-        id: users.id,
-        certificateTokenId: users.certificateTokenId,
       })
       .from(users)
       .where(eq(users.id, userId))
       .limit(1);
 
-    if (!user) {
-      throw new Error('User not found');
-    }
+    return user;
+  }
 
-    await this.db
-      .update(certificateTokensSchema)
-      .set({
-        ...certificateTokens,
+  /**
+   * Find all token balances for a user
+   */
+  async findTokenBalancesByUserId(
+    userId: number,
+  ): Promise<{ type: string; balance: number }[]> {
+    const balances = await this.db
+      .select({
+        type: tokenBalance.type,
+        balance: tokenBalance.balance,
+        userId: tokenBalance.userId,
       })
-      .where(eq(certificateTokensSchema.userId, userId));
+      .from(tokenBalance)
+      .where(eq(tokenBalance.userId, userId));
 
-    return UserDTO.fromDb(user.id);
+    return balances;
+  }
+
+  /**
+   * Find a specific token balance
+   */
+  async findTokenBalance(
+    userId: number,
+    type: TokenType,
+  ): Promise<{ userId: number; type: string; balance: number }> {
+    const [balance] = await this.db
+      .select({
+        type: tokenBalance.type,
+        balance: tokenBalance.balance,
+        userId: tokenBalance.userId,
+      })
+      .from(tokenBalance)
+      .where(and(eq(tokenBalance.userId, userId), eq(tokenBalance.type, type)))
+      .limit(1);
+
+    return balance;
+  }
+
+  /**
+   * Create a new token balance
+   */
+  async createTokenBalance(
+    userId: number,
+    type: TokenType,
+    balance: number,
+  ): Promise<void> {
+    await this.db.insert(tokenBalance).values({
+      userId,
+      type,
+      balance,
+    });
+  }
+
+  /**
+   * Update an existing token balance
+   */
+  async updateTokenBalance(
+    userId: number,
+    type: TokenType,
+    balance: number,
+  ): Promise<void> {
+    await this.db
+      .update(tokenBalance)
+      .set({ balance })
+      .where(and(eq(tokenBalance.userId, userId), eq(tokenBalance.type, type)));
   }
 }

@@ -1,7 +1,6 @@
-import { OrderDTO } from '@/dtos/order';
-import { orderInputSchema } from '@/app/_lib/validation-shemas/order';
-import { OrdersService } from '@/services/ordersService';
 import { env } from '@/utils/env';
+import { UpsertTokenBalanceUseCase } from '@/use-cases/token-balance.usecase';
+import { orderInputSchema } from '@/app/_lib/validation-shemas/order';
 
 export async function POST(req: Request) {
   const token = req.headers.get('Authorization');
@@ -22,12 +21,23 @@ export async function POST(req: Request) {
   }
 
   try {
-    const ordersService = new OrdersService();
+    const upsertTokenBalanceUseCase = new UpsertTokenBalanceUseCase();
+    const results = [];
 
     for (const order of data) {
-      const orderDTO = OrderDTO.fromDb(order);
-      await ordersService.createOrder(orderDTO);
+      const response = await upsertTokenBalanceUseCase.execute(
+        order.id,
+        order.tokens,
+      );
+      results.push(response);
     }
+
+    return new Response(JSON.stringify(results), {
+      status: 201,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   } catch (error) {
     return new Response(
       `Failed to create order ${error instanceof Error ? error.message : ''}`,
@@ -36,8 +46,4 @@ export async function POST(req: Request) {
       },
     );
   }
-
-  return new Response('Order created successfully', {
-    status: 201,
-  });
 }

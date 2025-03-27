@@ -8,7 +8,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useServerAction } from 'zsa-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { CalendarIcon, User, Building2, UserCog } from 'lucide-react';
+import {
+  CalendarIcon,
+  User,
+  Building2,
+  UserCog,
+  FlaskConical,
+} from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -29,14 +35,30 @@ import { useToast } from '@components/ui/use-toast';
 import { cn } from '@lib/utils';
 import { createCertificateSchema } from '@lib/validation-shemas/create-certificate';
 import { createCertificate } from '@/app/certificados/novo/action';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/ui/select';
 
-export default function CreateCertificateForm() {
+export default function CreateCertificateForm({
+  type,
+}: {
+  type: 'higienizacao' | 'impermeabilizacao';
+}) {
+  console.log(type);
   const router = useRouter();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof createCertificateSchema>>({
-    mode: 'onChange',
+    mode: 'all',
     resolver: zodResolver(createCertificateSchema),
+    defaultValues: {
+      type,
+      product: null,
+    },
   });
 
   const { execute, isPending } = useServerAction(createCertificate, {
@@ -105,19 +127,21 @@ export default function CreateCertificateForm() {
                       <Button
                         variant="outline"
                         className={cn(
-                          'w-full pl-3 text-left font-normal',
+                          'flex w-full items-center justify-start gap-2 font-normal',
                           !field.value && 'text-muted-foreground',
                         )}
                         disabled={isPending}
                       >
+                        <CalendarIcon className="h-5 w-5 opacity-50" />
                         {field.value ? (
                           format(field.value, "d 'de' MMMM 'de' yyyy", {
                             locale: ptBR,
                           })
                         ) : (
-                          <span>Escolha uma data</span>
+                          <span className="text-gray-400">
+                            Escolha uma data...
+                          </span>
                         )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
@@ -193,13 +217,52 @@ export default function CreateCertificateForm() {
               </FormItem>
             )}
           />
+
+          {type === 'impermeabilizacao' && (
+            <FormField
+              control={form.control}
+              name="product"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    Produto aplicado
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || undefined}
+                    defaultValue={(field.value as string) || undefined}
+                    disabled={isPending}
+                  >
+                    <FormControl>
+                      <div className="relative">
+                        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-3">
+                          <FlaskConical className="h-5 w-5 text-gray-400" />
+                        </div>
+                        <SelectTrigger className="w-full pl-10">
+                          <SelectValue placeholder="Selecione o produto..." />
+                        </SelectTrigger>
+                      </div>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Impertudo">Impertudo</SelectItem>
+                      <SelectItem value="Safe">Safe</SelectItem>
+                      <SelectItem value="Safe Tech">Safe Tech</SelectItem>
+                      <SelectItem value="Eco">Eco</SelectItem>
+                      <SelectItem value="Tech Block">Tech Block</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </div>
 
         <div className="flex justify-end">
           <Button
             type="submit"
             className="relative overflow-hidden bg-brand text-white hover:bg-brand/90"
-            disabled={isPending || !form.formState.isValid}
+            disabled={isPending}
           >
             {isPending ? (
               <div className="flex items-center gap-2">

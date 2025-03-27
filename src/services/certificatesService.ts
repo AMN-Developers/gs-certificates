@@ -1,8 +1,7 @@
-import { CertificateDTO } from '@/dtos/certificate';
-import { UserDTO } from '@/dtos/user';
-import { ICertificatesRepository, IUsersRepository } from '@/repositories';
+import { CertificateDTO, type Products } from '@/dtos/certificate';
+import type { ICertificatesRepository, IUsersRepository } from '@/repositories';
 import { CertificatesRepository } from '@/repositories/certificatesRepository';
-import { UsersRepository } from '@/repositories/userRepository';
+import { type TokenType, UsersRepository } from '@/repositories/userRepository';
 import {
   decrypt,
   encrypt,
@@ -26,27 +25,30 @@ export class CertificatesService {
     companyName: string;
     technichalResponsible: string;
     userId: number;
+    type: TokenType;
+    product: Products;
   }) {
-    const user = await this._usersRepository.retrieveUserById(
-      new UserDTO(certificate.userId),
-    );
+    const user = await this._usersRepository.findById(certificate.userId);
 
     if (!user) {
       throw new Error('User not found');
     }
 
-    const certificateTokenQuantity = user.certificateTokens?.higienizacao;
+    const certificateTokenQuantity =
+      await this._usersRepository.findTokenBalance(
+        certificate.userId,
+        certificate.type,
+      );
 
-    if (!certificateTokenQuantity || certificateTokenQuantity < 1) {
+    if (!certificateTokenQuantity || certificateTokenQuantity.balance < 1) {
       throw new Error('User does not have enough tokens');
     }
 
-    await this._usersRepository.updateTokenQuantity({
-      userId: certificate.userId,
-      certificateTokens: {
-        higienizacao: certificateTokenQuantity - 1,
-      },
-    });
+    await this._usersRepository.updateTokenBalance(
+      certificate.userId,
+      certificate.type,
+      certificateTokenQuantity.balance - 1,
+    );
 
     const encryptCertificateData = encrypt(
       JSON.stringify(certificate),
@@ -62,7 +64,9 @@ export class CertificatesService {
         encryptedTokenHash,
         encryptCertificateData,
         certificate.date,
-        user.userId,
+        user.id,
+        certificate.type,
+        certificate.product,
       ),
     );
 
@@ -87,6 +91,8 @@ export class CertificatesService {
       date: Date;
       companyName: string;
       technichalResponsible: string;
+      type: TokenType;
+      product: Products;
     };
     try {
       decryptedData = JSON.parse(
