@@ -18,6 +18,7 @@ const montserrat = Montserrat({ subsets: ['latin'] });
 
 export default function CertificateImpersPrintTemplate({
   certificate,
+  certificateNumber,
 }: TCertificatePrintTemplateProps) {
   const { clientName, companyName, technichalResponsible, product, date } =
     certificate;
@@ -190,7 +191,6 @@ export default function CertificateImpersPrintTemplate({
               <div>
                 <p className="font-semibold">
                   Data:{' '}
-
                   <span className="font-thin">
                     {new Date(date).toLocaleDateString('pt-BR', {
                       day: '2-digit',
