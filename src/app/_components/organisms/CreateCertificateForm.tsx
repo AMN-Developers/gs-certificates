@@ -244,11 +244,13 @@ export default function CreateCertificateForm({
                       </div>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Impertudo">Impertudo</SelectItem>
-                      <SelectItem value="Safe">Safe</SelectItem>
-                      <SelectItem value="Safe Tech">Safe Tech</SelectItem>
-                      <SelectItem value="Eco">Eco</SelectItem>
-                      <SelectItem value="Tech Block">Tech Block</SelectItem>
+                      <SelectItem value="Impertudo">Lótus Impertudo</SelectItem>
+                      <SelectItem value="Safe">Lótus Safe</SelectItem>
+                      <SelectItem value="Safe Tech">Lótus Safe Tech</SelectItem>
+                      <SelectItem value="Eco">Lótus Eco</SelectItem>
+                      <SelectItem value="Tech Block">
+                        Lótus Tech Block
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

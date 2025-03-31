@@ -208,7 +208,7 @@ export default function CertificateImpersPrintTemplate({
               <div>
                 <p className="font-semibold">
                   Produto aplicado:{' '}
-                  <span className="font-light">{product}</span>
+                  <span className="font-light">Lótus {product}</span>
                 </p>
               </div>
               <div>
