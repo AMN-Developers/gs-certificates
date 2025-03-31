@@ -101,6 +101,13 @@ export default function CertificateTemplate({
     return 'Higienização';
   };
 
+  const getBackground = (type: CertificateType) => {
+    if (type === 'impermeabilizacao') {
+      return 'bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff]';
+    }
+    return 'bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242]';
+  };
+
   return (
     <>
       {/* Actions Section */}
@@ -117,7 +124,7 @@ export default function CertificateTemplate({
             ) : (
               <Download className="h-4 w-4" />
             )}
-            Baixar PDF
+            Baixar
           </Button>
           <ShareButton
             clientName={clientName}
@@ -135,7 +142,7 @@ export default function CertificateTemplate({
         <div className="w-full">
           <div
             ref={certificateRef}
-            className="flex w-full flex-col gap-8 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242] p-8 text-white sm:p-12"
+            className={`flex w-full flex-col gap-8 ${getBackground(type)} p-8 text-white sm:p-12`}
           >
             {/* Certificate Header */}
             <div className="flex flex-col items-center gap-3">

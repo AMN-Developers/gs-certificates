@@ -90,7 +90,9 @@ export default function Certificates() {
                   <div className="relative z-10 flex h-full flex-col justify-between gap-4">
                     <div>
                       <h3 className="text-lg font-bold uppercase text-white">
-                        {token.type}
+                        {token.type === 'higienizacao'
+                          ? 'Higienização'
+                          : 'Impermeabilização'}
                       </h3>
                       <p className="mt-2 text-white/90">
                         {token.balance} certificados disponíveis
