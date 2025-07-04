@@ -27,3 +27,9 @@ export interface IUsersRepository {
     balance: number,
   ): Promise<void>;
 }
+
+export interface IDashboardRepository {
+  getTotalCertificates(): Promise<number>;
+  getUniqueUsersWithCertificates(): Promise<number>;
+  getTotalUsers(): Promise<number>;
+}

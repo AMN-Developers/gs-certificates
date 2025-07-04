@@ -6,6 +6,7 @@ import {
 
 export const QueryKeyFactory = createServerActionsKeyFactory({
   getPosts: () => ['getUser'],
+  getDashboardStats: () => ['getDashboardStats'],
 });
 
 const {
