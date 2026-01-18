@@ -101,11 +101,11 @@ export default function CertificateTemplate({
     return 'Higienização';
   };
 
-  const getBackground = (type: CertificateType) => {
+  const getHeaderBackground = (type: CertificateType) => {
     if (type === 'impermeabilizacao') {
-      return 'bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff]';
+      return 'bg-gradient-to-r from-[#1a4b8c] via-[#2d6cb5] to-[#1a4b8c]';
     }
-    return 'bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#3C43EA] to-[#101242]';
+    return 'bg-gradient-to-r from-[#1a237e] via-[#3C43EA] to-[#1a237e]';
   };
 
   return (
@@ -140,44 +140,54 @@ export default function CertificateTemplate({
       {/* Certificate Preview */}
       <div className="relative w-full overflow-hidden rounded-lg bg-white shadow-lg">
         <div className="w-full">
-          <div
-            ref={certificateRef}
-            className={`flex w-full flex-col gap-8 ${getBackground(type)} p-8 text-white sm:p-12`}
-          >
+          <div ref={certificateRef} className="flex w-full flex-col bg-white">
             {/* Certificate Header */}
-            <div className="flex flex-col items-center gap-3">
+            <div
+              className={`flex flex-col items-center gap-3 ${getHeaderBackground(type)} p-6 sm:p-8`}
+            >
               <Image
                 src={logo}
                 alt="G&S Home Solutions Logo"
-                width={70}
-                height={70}
-                className="size-28 w-auto"
+                width={80}
+                height={80}
+                className="w-auto"
                 priority
               />
-              <h1 className="text-center text-xl font-bold md:text-2xl">
+              <h1 className="text-center text-xl font-bold uppercase tracking-wide text-white md:text-2xl">
                 Certificado de Garantia de {getCertificateType(type)} gerado com
                 sucesso
               </h1>
-              <p className="font-bold">
+              <p className="text-center font-medium text-white/90">
                 Baixe no seu dispositivo ou compartilhe diretamente o
                 certificado com seu cliente nos botões acima.
               </p>
             </div>
 
             {/* Certificate Footer */}
-            <div className="flex flex-col justify-between gap-4 border-t border-white/20 pt-3">
-              <div className="flex flex-col gap-1 text-sm">
-                <p>Cliente: {clientName}</p>
-                <p>
-                  Data:{' '}
-                  {new Date(date).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
-                </p>
-                <p>Empresa: {companyName}</p>
-                <p>Técnico Aplicador: {technichalResponsible}</p>
+            <div className="flex flex-col justify-between gap-4 bg-gradient-to-br from-[#3b82c4] to-[#1e5a9e] p-6 text-white sm:p-8">
+              <div className="flex flex-col gap-2 text-sm">
+                <div className="flex items-center gap-2 border-b border-white/30 pb-1">
+                  <span className="font-semibold">Cliente:</span>
+                  <span>{clientName}</span>
+                </div>
+                <div className="flex items-center gap-2 border-b border-white/30 pb-1">
+                  <span className="font-semibold">Data:</span>
+                  <span>
+                    {new Date(date).toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 border-b border-white/30 pb-1">
+                  <span className="font-semibold">Empresa:</span>
+                  <span>{companyName}</span>
+                </div>
+                <div className="flex items-center gap-2 border-b border-white/30 pb-1">
+                  <span className="font-semibold">Técnico Aplicador:</span>
+                  <span>{technichalResponsible}</span>
+                </div>
               </div>
             </div>
           </div>
