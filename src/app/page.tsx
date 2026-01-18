@@ -18,7 +18,7 @@ import { Input } from '@components/ui/input';
 import { Button } from '@components/ui/button';
 import { KeyRound, LogIn } from 'lucide-react';
 import Image from 'next/image';
-import logo from '@assets/logo.svg';
+import logo from '@assets/logo.png';
 
 const loginByClientIdSchema = z.object({
   clientId: z

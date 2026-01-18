@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import logo from '@assets/logo.svg';
+import logo from '@assets/logo.png';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@components/ui/button';
