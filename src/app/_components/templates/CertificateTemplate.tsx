@@ -35,7 +35,7 @@ export default function CertificateTemplate({
     try {
       setIsGenerating(true);
       if (pdf) {
-        const blob = new Blob([pdf], { type: 'image/png' });
+        const blob = new Blob([pdf as BlobPart], { type: 'image/png' });
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;

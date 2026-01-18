@@ -47,7 +47,7 @@ export default function ShareButton({
       }
 
       // Create blob with image/png MIME type
-      const blob = new Blob([imageData], { type: 'image/png' });
+      const blob = new Blob([imageData as BlobPart], { type: 'image/png' });
 
       // Create file with .png extension
       const file = new File([blob], `${clientName}-certificado.png`, {
@@ -84,7 +84,7 @@ export default function ShareButton({
 
       // Fallback to download when sharing fails
       if (pdf) {
-        const blob = new Blob([pdf], { type: 'image/png' });
+        const blob = new Blob([pdf as BlobPart], { type: 'image/png' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
