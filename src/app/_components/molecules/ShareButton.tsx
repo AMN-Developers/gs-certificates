@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-
 import { Share } from 'lucide-react';
 import { Button } from '@components/ui/button';
 import { generateCertificatePDF } from '@/app/certificados/[certificateId]/action';
@@ -17,7 +15,7 @@ export default function ShareButton({
   clientName: string;
   certificateId: string;
   // eslint-disable-next-line no-unused-vars
-  setPdf: (image: Uint8Array) => void;
+  setPdf(image: Uint8Array): void;
   pdf: Uint8Array | null;
   isGenerating: boolean;
   setIsGenerating: Dispatch<SetStateAction<boolean>>;

@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import logo from '@assets/logo.png';
+import logo from '@assets/logo.svg';
 import qrVegan from '@assets/qrVegan.png';
 import astm from '@assets/astm.png';
 

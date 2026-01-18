@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@components/ui/button';
 import { Download } from 'lucide-react';
-import logo from '@assets/logo.png';
+import logo from '@assets/logo.svg';
 import { generateCertificatePDF } from '@/app/certificados/[certificateId]/action';
 import ShareButton from '@/app/_components/molecules/ShareButton';
 import { Products } from '@/dtos/certificate';
