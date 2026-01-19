@@ -43,7 +43,7 @@ export default function CertificateImpersPrintTemplate({
         </h1>
       </div>
 
-      <div className="grid flex-1 grid-cols-2 gap-6 text-[0.7rem]">
+      <div className="grid flex-1 grid-cols-2 gap-6 text-[0.8rem]">
         {/* Benefícios */}
         <section className="flex flex-col items-center rounded-lg bg-black bg-opacity-15 p-4">
           <h2 className="mb-4 text-center font-bold">
