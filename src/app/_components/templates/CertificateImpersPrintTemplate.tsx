@@ -134,9 +134,9 @@ export default function CertificateImpersPrintTemplate({
           <section className="flex items-center justify-start">
             <div className="flex items-center gap-4">
               {/* Add your logos here */}
-              <Image src={aatcc} alt="Logo" width={100} height={100} />
-              <Image src={eureciclo} alt="Logo" width={100} height={100} />
-              <Image src={iso} alt="Logo" width={100} height={100} />
+              <Image src={aatcc} alt="Logo" width={50} height={50} />
+              <Image src={eureciclo} alt="Logo" width={50} height={50} />
+              <Image src={iso} alt="Logo" width={50} height={50} />
             </div>
           </section>
         </section>
