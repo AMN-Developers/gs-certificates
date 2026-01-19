@@ -1,5 +1,8 @@
 import { Montserrat } from 'next/font/google';
 import logo from '@assets/logo.svg';
+import aatcc from '@assets/aatcc.svg';
+import eureciclo from '@assets/eureciclo.svg';
+import iso from '@assets/iso.svg';
 import Image from 'next/image';
 import { Products } from '@/dtos/certificate';
 
@@ -31,11 +34,11 @@ export default function CertificateImpersPrintTemplate({
         <Image
           src={logo}
           alt="G&S Home Solutions Logo"
-          width={210}
-          height={210}
+          width={180}
+          height={180}
           priority
         />
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-2xl font-bold">
           CERTIFICADO DE GARANTIA DE IMPERMEABILIZAÇÃO
         </h1>
       </div>
@@ -91,38 +94,51 @@ export default function CertificateImpersPrintTemplate({
         </section>
 
         {/* Manutenção */}
-        <section className="flex flex-col gap-4">
-          <h2 className="font-bold">MANUTENÇÃO E CUIDADOS APÓS A APLICAÇÃO</h2>
+        <section className="flex flex-col gap-8">
+          <section className="flex flex-col gap-4">
+            <h2 className="font-bold">
+              MANUTENÇÃO E CUIDADOS APÓS A APLICAÇÃO
+            </h2>
 
-          <ul className="flex list-inside list-disc flex-col text-left">
-            <li>
-              <strong>Aspiração Regular:</strong> Aspire o estofado
-              semanalmente. Poeira e pelos acumulados podem absorver água e
-              prejudicar a eficácia da impermeabilização.
-            </li>
-            <li>
-              <strong>Produtos Não Recomendados:</strong> Evite odorizadores de
-              tecidos/ambientes, home sprays e amaciante diluído, pois podem
-              danificar a camada protetora.
-            </li>
-            <li>
-              <strong>Derramamento de Líquidos:</strong> Remova imediatamente
-              com papel absorvente, deixando o papel em contato com o líquido
-              até que a absorção total seja alcançada por capilaridade. Não
-              esfregue nem use panos.
-            </li>
-            <li>
-              <strong>Manchas e Sujidades:</strong> Algumas marcas podem ocorrer
-              (sombreamento, patinhas, saliva/excrementos de pets, vinho e uso
-              diário). Para removê-las, utilize Lótus Clean Protect, que também
-              recompõe a proteção no local.
-            </li>
-            <li>
-              <strong>Evitar Produtos Caseiros:</strong> Não use detergente
-              neutro, sabão para roupas, cloro ou misturas caseiras para limpeza
-              de manchas.
-            </li>
-          </ul>
+            <ul className="flex list-inside list-disc flex-col text-left">
+              <li>
+                <strong>Aspiração Regular:</strong> Aspire o estofado
+                semanalmente. Poeira e pelos acumulados podem absorver água e
+                prejudicar a eficácia da impermeabilização.
+              </li>
+              <li>
+                <strong>Produtos Não Recomendados:</strong> Evite odorizadores
+                de tecidos/ambientes, home sprays e amaciante diluído, pois
+                podem danificar a camada protetora.
+              </li>
+              <li>
+                <strong>Derramamento de Líquidos:</strong> Remova imediatamente
+                com papel absorvente, deixando o papel em contato com o líquido
+                até que a absorção total seja alcançada por capilaridade. Não
+                esfregue nem use panos.
+              </li>
+              <li>
+                <strong>Manchas e Sujidades:</strong> Algumas marcas podem
+                ocorrer (sombreamento, patinhas, saliva/excrementos de pets,
+                vinho e uso diário). Para removê-las, utilize Lótus Clean
+                Protect, que também recompõe a proteção no local.
+              </li>
+              <li>
+                <strong>Evitar Produtos Caseiros:</strong> Não use detergente
+                neutro, sabão para roupas, cloro ou misturas caseiras para
+                limpeza de manchas.
+              </li>
+            </ul>
+          </section>
+
+          <section className="flex items-center justify-start">
+            <div className="flex items-center gap-4">
+              {/* Add your logos here */}
+              <Image src={aatcc} alt="Logo" width={100} height={100} />
+              <Image src={eureciclo} alt="Logo" width={100} height={100} />
+              <Image src={iso} alt="Logo" width={100} height={100} />
+            </div>
+          </section>
         </section>
 
         {/* Responsabilidades + Formulário */}
