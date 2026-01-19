@@ -28,24 +28,24 @@ export default function CertificateImpersPrintTemplate({
 
   return (
     <div
-      className={`fixed inset-0 flex min-h-screen flex-col gap-8 bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff] p-10 text-white ${montserrat.className}`}
+      className={`fixed inset-0 flex min-h-screen flex-col gap-6 bg-gradient-to-br from-[#7ec9ff] via-[#0066a8] to-[#7ec9ff] p-8 text-white ${montserrat.className}`}
     >
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-3">
         <Image
           src={logo}
           alt="G&S Home Solutions Logo"
-          width={180}
-          height={180}
+          width={140}
+          height={140}
           priority
         />
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-xl font-bold">
           CERTIFICADO DE GARANTIA DE IMPERMEABILIZAÇÃO
         </h1>
       </div>
 
-      <div className="grid flex-1 grid-cols-2 gap-8 text-[0.7rem]">
+      <div className="grid flex-1 grid-cols-2 gap-6 text-[0.7rem]">
         {/* Benefícios */}
-        <section className="flex flex-col items-center rounded-lg bg-black bg-opacity-15 p-5">
+        <section className="flex flex-col items-center rounded-lg bg-black bg-opacity-15 p-4">
           <h2 className="mb-4 text-center font-bold">
             BENEFÍCIOS DA IMPERMEABILIZAÇÃO
           </h2>
