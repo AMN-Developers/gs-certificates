@@ -36,5 +36,6 @@ jobs:
             **/.git*
             **/.git*/**
             **/node_modules/**
+            **/.next/cache/**
             .env
             .env.example
