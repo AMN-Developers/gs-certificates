@@ -4,10 +4,11 @@ import { retrieveCertificateById } from '../action';
 export default async function CertificatePrint({
   params,
 }: {
-  params: { certificateId: string };
+  params: Promise<{ certificateId: string }>;
 }) {
+  const { certificateId } = await params;
   const [data] = await retrieveCertificateById({
-    certificateId: params.certificateId,
+    certificateId,
   });
 
   if (!data?.certificate) {
@@ -17,7 +18,7 @@ export default async function CertificatePrint({
   return (
     <DynamicTemplate
       certificate={data.certificate}
-      certificateNumber={params.certificateId}
+      certificateNumber={certificateId}
       type={data.certificate.type}
     />
   );

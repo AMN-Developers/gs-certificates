@@ -2,12 +2,12 @@ import CreateCertificateForm from '@components/organisms/CreateCertificateForm';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export default function NewCertificate({
+export default async function NewCertificate({
   searchParams,
 }: {
-  searchParams: { token?: 'higienizacao' | 'impermeabilizacao' };
+  searchParams: Promise<{ token?: 'higienizacao' | 'impermeabilizacao' }>;
 }) {
-  const token = searchParams.token;
+  const token = (await searchParams).token;
 
   return (
     <section className="mx-auto flex min-h-[calc(100vh-10rem)] w-full max-w-screen-xl flex-col gap-6 px-4 py-8 xl:px-0">

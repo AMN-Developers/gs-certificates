@@ -11,7 +11,9 @@ const storageModeOverrideSchema = z
 const envSchema = z.object({
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string(),
-  ADMIN_USER_ID: z.coerce.number().int().positive(),
+  ADMIN_USERNAME: z.string().trim().min(1).optional(),
+  ADMIN_PASSWORD_SCRYPT: z.string().trim().min(1).optional(),
+  ADMIN_SESSION_SECRET: z.string().min(32).optional(),
   LEGACY_FALLBACK_CUTOFF_AT: z.string().optional(),
   LEGACY_BACKFILL_BATCH_SIZE: z.coerce.number().int().positive().default(100),
   TEMPLATE_STORAGE_MODE_OVERRIDE: z.string().optional(),
