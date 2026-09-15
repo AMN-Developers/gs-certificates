@@ -12,7 +12,7 @@ export default async function DashboardLayout({
   const adminContext = await resolveDashboardAdminContext();
 
   if (!adminContext) {
-    redirect('/');
+    redirect('/admin');
   }
 
   return children;
