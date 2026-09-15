@@ -27,16 +27,14 @@ jobs:
 
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-       with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: certificados.gshomesolutions.com.br/www/
-        log-level: verbose
-        exclude: |
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: certificados.gshomesolutions.com.br/www/
+          exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
-            **/.next/cache/**
             .env
             .env.example
