@@ -4,7 +4,7 @@ import { z } from 'zod';
 import {
   requireOwnerAdmin,
 } from '@/app/dashboard/_admin-auth';
-import { createAdminPasswordHash, verifyAdminPassword } from '@/lib/admin-auth';
+import { createAdminPasswordHash } from '@/lib/admin-auth';
 import { writeAdminAudit } from '@/lib/admin-audit';
 import { createAdminUser } from '@/lib/admin-users';
 import { db } from '@/lib/db';
