@@ -48,6 +48,8 @@ export const getSessionAccess = createServerAction().handler(async () => {
   const isAdmin = !!admin;
   const canManageAdministrators =
     admin?.role === 'owner' && admin.actor === 'gsadmin';
+  const adminUsername = admin?.actor ?? null;
+  const adminRole = admin?.role ?? null;
   const token = (await cookies()).get('token')?.value;
 
   if (!token) {
@@ -55,6 +57,8 @@ export const getSessionAccess = createServerAction().handler(async () => {
       isAuthenticated: false,
       isAdmin,
       canManageAdministrators,
+      adminUsername,
+      adminRole,
     };
   }
 
@@ -65,6 +69,9 @@ export const getSessionAccess = createServerAction().handler(async () => {
     return {
       isAuthenticated: false,
       isAdmin,
+      canManageAdministrators,
+      adminUsername,
+      adminRole,
     };
   }
 
@@ -72,5 +79,7 @@ export const getSessionAccess = createServerAction().handler(async () => {
     isAuthenticated: true,
     isAdmin,
     canManageAdministrators,
+    adminUsername,
+    adminRole,
   };
 });
