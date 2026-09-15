@@ -12,9 +12,6 @@ export const metadata: Metadata = {
   title: 'Certificados | G&S Home Soltions',
   description:
     'Gerador de certificados digitais para produtos G&S Home Solutions',
-  icons: {
-    icon: '/favicon.ico',
-  },
 };
 
 export default function RootLayout({

@@ -1,16 +1,32 @@
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { retrieveCertificateById } from './action';
-import CertificateTemplate from '@/app/_components/templates/CertificateTemplate';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/app/_components/ui/skeleton';
+
+const CertificateTemplate = dynamic(
+  () => import('@/app/_components/templates/CertificateTemplate'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="space-y-6">
+        <div className="flex justify-end space-x-4">
+          <Skeleton className="h-10 w-32 rounded-lg" />
+          <Skeleton className="h-10 w-32 rounded-lg" />
+        </div>
+        <Skeleton className="h-[800px] w-full rounded-lg" />
+      </div>
+    ),
+  },
+);
 
 export default async function Certificate({
   params,
 }: {
-  params: Promise<{ certificateId: string }>;
+  params: { certificateId: string };
 }) {
-  const { certificateId } = await params;
   const [data] = await retrieveCertificateById({
-    certificateId,
+    certificateId: params.certificateId,
   });
 
   if (!data?.certificate) {
@@ -63,7 +79,7 @@ export default async function Certificate({
       <div className="rounded-lg bg-white p-3 shadow-lg sm:p-6">
         <CertificateTemplate
           certificate={data.certificate}
-          certificateNumber={certificateId}
+          certificateNumber={params.certificateId}
         />
       </div>
     </section>

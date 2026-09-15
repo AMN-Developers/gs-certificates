@@ -2,21 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(req: NextRequest) {
   const currentPath = req.nextUrl.pathname;
-  const clientToken = req.cookies.get('token')?.value || '';
-  const adminSession = req.cookies.get('admin_session')?.value || '';
+  const isPublic = currentPath === '/';
+  const token = req.cookies.get('token')?.value || '';
 
-  if (currentPath === '/' && clientToken) {
+  if (isPublic && token.length > 0) {
     return NextResponse.redirect(new URL('/certificados', req.nextUrl));
   }
 
-  if (currentPath.startsWith('/certificados') && !clientToken) {
+  if (!isPublic && !(token.length > 0)) {
     return NextResponse.redirect(new URL('/', req.nextUrl));
   }
-
-  if (currentPath.startsWith('/dashboard') && !adminSession)
-    return NextResponse.redirect(new URL('/admin', req.nextUrl));
 }
 
 export const config = {
-  matcher: ['/', '/certificados/:path*', '/dashboard/:path*'],
+  matcher: ['/', '/certificados', '/certificados/novo', '/dashboard'],
 };

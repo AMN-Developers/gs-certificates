@@ -57,9 +57,6 @@ export const createCertificateType = createServerAction()
   .input(createCertificateTypeInputSchema)
   .handler(async ({ input }) => {
     const adminContext = await resolveAdminOrThrow();
-    if (adminContext.userId === null) {
-      throw new Error('A gestão de templates exige a migração administrativa pendente.');
-    }
     const service = new CertificateTypeAdminService();
 
     return service.createCertificateType({
@@ -102,9 +99,6 @@ export const uploadCertificateTemplate = createServerAction()
   .input(uploadCertificateTemplateInputSchema, { type: 'formData' })
   .handler(async ({ input }) => {
     const adminContext = await resolveAdminOrThrow();
-    if (adminContext.userId === null) {
-      throw new Error('A gestão de templates exige a migração administrativa pendente.');
-    }
     const service = new CertificateTypeAdminService();
     const correlationId = randomUUID();
     const compatibility = await service.getTemplateStorageCompatibility();
