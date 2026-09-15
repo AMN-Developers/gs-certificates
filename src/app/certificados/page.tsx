@@ -7,13 +7,15 @@ import { Skeleton } from '@components/ui/skeleton';
 import { logout } from '../action';
 import { useServerActionQuery } from '@lib/hooks/server-action-hooks';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { getUser } from './action';
-import Link from 'next/link';
 import { LogOut } from 'lucide-react';
+import { OperationLoadingOverlay } from '@components/ui/operation-loading-overlay';
 
 export default function Certificates() {
   const router = useRouter();
   const { toast } = useToast();
+  const [openingType, setOpeningType] = useState<string | null>(null);
 
   const { isLoading, data } = useServerActionQuery(getUser, {
     input: undefined,
@@ -35,6 +37,30 @@ export default function Certificates() {
       });
     },
   });
+
+  function openCertificateForm(type: string) {
+    setOpeningType(type);
+    window.requestAnimationFrame(() => {
+      router.push('/certificados/novo?token=' + encodeURIComponent(type));
+    });
+  }
+
+  const displayedTokens = Object.values(
+    (data?.certificateTokens ?? []).reduce<
+      Record<string, { type: string; balance: number }>
+    >((tokens, token) => {
+      if (token.type !== 'higienizacao' && token.type !== 'impermeabilizacao') {
+        return tokens;
+      }
+
+      const current = tokens[token.type];
+      tokens[token.type] = {
+        type: token.type,
+        balance: (current?.balance ?? 0) + token.balance,
+      };
+      return tokens;
+    }, {}),
+  );
 
   return (
     <section className="mx-auto flex min-h-[calc(100vh-10rem)] w-full max-w-screen-xl flex-col gap-6 px-4 py-8 xl:px-0">
@@ -81,8 +107,8 @@ export default function Certificates() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {(data?.certificateTokens?.length ?? 0 > 0) ? (
-              data?.certificateTokens.map((token) => (
+            {displayedTokens.length > 0 ? (
+              displayedTokens.map((token) => (
                 <div
                   key={token.type}
                   className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-brand to-[#1a237e] p-6 shadow-lg transition-all hover:shadow-xl"
@@ -99,12 +125,14 @@ export default function Certificates() {
                       </p>
                     </div>
 
-                    <Link
-                      href={`/certificados/novo?token=${token.type}`}
-                      className="inline-flex w-full items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-brand shadow-sm transition-colors hover:bg-gray-50"
+                    <button
+                      type="button"
+                      onClick={() => openCertificateForm(token.type)}
+                      disabled={!!openingType}
+                      className="inline-flex w-full items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-brand shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-wait disabled:opacity-70"
                     >
                       Emitir certificado
-                    </Link>
+                    </button>
                   </div>
 
                   {/* Decorative background pattern */}
@@ -119,6 +147,12 @@ export default function Certificates() {
           </div>
         )}
       </div>
+      {openingType && (
+        <OperationLoadingOverlay
+          title="Abrindo formulário"
+          description="Estamos preparando os dados para a emissão. Aguarde alguns segundos."
+        />
+      )}
     </section>
   );
 }

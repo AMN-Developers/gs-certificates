@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card';
 import { Button } from '@components/ui/button';
 import { Skeleton } from '@components/ui/skeleton';
-import { FileText, Users, UserCheck, TrendingUp, Settings } from 'lucide-react';
+import { FileText, Users, UserCheck, TrendingUp, Settings, CircleDollarSign, ScrollText } from 'lucide-react';
 import { useServerActionQuery } from '../_lib/hooks/server-action-hooks';
 
 export default function DashboardPage() {
@@ -181,6 +181,40 @@ export default function DashboardPage() {
                 <Link href="/dashboard/certificate-types">
                   Abrir gestao de templates
                 </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CircleDollarSign className="h-5 w-5 text-emerald-700" />
+                Créditos de certificados
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <p className="text-muted-foreground text-sm">
+                Consulte saldos e acrescente ou remova créditos com histórico de cada ajuste.
+              </p>
+              <Button asChild>
+                <Link href="/dashboard/credits">Gerenciar créditos</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ScrollText className="h-5 w-5 text-slate-700" />
+                Auditoria administrativa
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <p className="text-muted-foreground text-sm">
+                Consulte os eventos administrativos e falhas relevantes do sistema.
+              </p>
+              <Button asChild variant="outline">
+                <Link href="/dashboard/logs">Abrir logs</Link>
               </Button>
             </CardContent>
           </Card>

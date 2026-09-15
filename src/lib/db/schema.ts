@@ -10,6 +10,7 @@ import {
   foreignKey,
   unique,
   index,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import {
@@ -50,6 +51,70 @@ export const tokenBalance = pgTable(
       columns: [table.userId],
       foreignColumns: [users.id],
     }),
+  }),
+);
+
+export const tokenAdjustments = pgTable(
+  'token_adjustments',
+  {
+    id: serial('id').primaryKey().notNull(),
+    userId: integer('user_id').notNull(),
+    type: certificateType().notNull(),
+    amount: integer('amount').notNull(),
+    balanceBefore: integer('balance_before').notNull(),
+    balanceAfter: integer('balance_after').notNull(),
+    reason: varchar('reason', { length: 300 }).notNull(),
+    adminActor: varchar('admin_actor', { length: 100 }).notNull(),
+    createdAt: timestamp('created_at', { precision: 3, mode: 'date' })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    userCreatedIdx: index('token_adjustments_user_created_idx').on(
+      table.userId,
+      table.createdAt,
+    ),
+    userFk: foreignKey({
+      columns: [table.userId],
+      foreignColumns: [users.id],
+    }),
+  }),
+);
+
+export const systemLogs = pgTable(
+  'system_logs',
+  {
+    id: serial('id').primaryKey().notNull(),
+    level: varchar('level', { length: 20 }).notNull().default('info'),
+    category: varchar('category', { length: 20 })
+      .notNull()
+      .default('operational'),
+    event: varchar('event', { length: 150 }).notNull(),
+    correlationId: varchar('correlation_id', { length: 36 }).notNull(),
+    actorType: varchar('actor_type', { length: 30 }).notNull().default('system'),
+    actorId: integer('actor_id'),
+    actorLabel: varchar('actor_label', { length: 100 }),
+    resourceType: varchar('resource_type', { length: 80 }),
+    resourceId: varchar('resource_id', { length: 150 }),
+    details: jsonb('details').$type<Record<string, unknown>>(),
+    createdAt: timestamp('created_at', { precision: 3, mode: 'date' })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    createdIdx: index('system_logs_created_idx').on(table.createdAt),
+    eventCreatedIdx: index('system_logs_event_created_idx').on(
+      table.event,
+      table.createdAt,
+    ),
+    levelCreatedIdx: index('system_logs_level_created_idx').on(
+      table.level,
+      table.createdAt,
+    ),
+    categoryCreatedIdx: index('system_logs_category_created_idx').on(
+      table.category,
+      table.createdAt,
+    ),
   }),
 );
 

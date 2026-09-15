@@ -3,24 +3,41 @@
 import Image from 'next/image';
 import logo from '@assets/logo.svg';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Button } from '@components/ui/button';
-import { FileText, BarChart3 } from 'lucide-react';
+import { BarChart3, BookOpen, FileText, LogOut } from 'lucide-react';
 import { useServerActionQuery } from '@lib/hooks/server-action-hooks';
 import { getSessionAccess } from '@/app/action';
 
 export default function Header() {
   const pathname = usePathname();
-  const isAuthenticated = pathname !== '/';
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const isAdminArea = pathname.startsWith('/dashboard');
+  const isClientArea = pathname.startsWith('/certificados');
   const { data: sessionAccess } = useServerActionQuery(getSessionAccess, {
     input: undefined,
     queryKey: ['getSessionAccess'],
   });
 
+  async function logoutAdmin() {
+    setIsLoggingOut(true);
+    try {
+      const response = await fetch('/api/admin/session', { method: 'DELETE' });
+      if (!response.ok) throw new Error('Não foi possível encerrar a sessão.');
+      router.replace('/admin');
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      setIsLoggingOut(false);
+    }
+  }
+
   return (
     <header className="via-[#18183b]/93 h-40 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand to-[#181a3d] p-4">
       <div className="mx-auto flex max-w-screen-xl items-center justify-between">
-        <Link href="/" prefetch={false}>
+        <Link href={isAdminArea ? '/dashboard' : '/'} prefetch={false}>
           <Image
             src={logo}
             alt="G&S Home Solutions Image Logo"
@@ -31,7 +48,7 @@ export default function Header() {
           />
         </Link>
 
-        {isAuthenticated && (
+        {isClientArea && (
           <nav className="flex items-center gap-2">
             <Link href="/certificados">
               <Button
@@ -43,19 +60,41 @@ export default function Header() {
                 Certificados
               </Button>
             </Link>
+          </nav>
+        )}
 
-            {sessionAccess?.isAdmin && (
-              <Link href="/dashboard">
-                <Button
-                  variant={pathname === '/dashboard' ? 'default' : 'ghost'}
-                  size="sm"
-                  className="flex items-center gap-2 text-white hover:bg-white/10"
-                >
-                  <BarChart3 className="h-4 w-4" />
-                  Dashboard
-                </Button>
-              </Link>
-            )}
+        {isAdminArea && sessionAccess?.isAdmin && (
+          <nav className="flex items-center gap-2">
+            <Link href="/dashboard">
+              <Button
+                variant={pathname === '/dashboard' ? 'default' : 'ghost'}
+                size="sm"
+                className="flex items-center gap-2 text-white hover:bg-white/10"
+              >
+                <BarChart3 className="h-4 w-4" />
+                Dashboard
+              </Button>
+            </Link>
+            <Link href="/dashboard/docs">
+              <Button
+                variant={pathname === '/dashboard/docs' ? 'default' : 'ghost'}
+                size="sm"
+                className="flex items-center gap-2 text-white hover:bg-white/10"
+              >
+                <BookOpen className="h-4 w-4" />
+                Docs
+              </Button>
+            </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={isLoggingOut}
+              onClick={logoutAdmin}
+              className="flex items-center gap-2 text-white hover:bg-white/10"
+            >
+              <LogOut className="h-4 w-4" />
+              {isLoggingOut ? 'Saindo…' : 'Sair'}
+            </Button>
           </nav>
         )}
       </div>
