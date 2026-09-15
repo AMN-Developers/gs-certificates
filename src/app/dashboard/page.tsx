@@ -5,7 +5,16 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card';
 import { Button } from '@components/ui/button';
 import { Skeleton } from '@components/ui/skeleton';
-import { FileText, Users, UserCheck, TrendingUp, Settings, CircleDollarSign, ScrollText } from 'lucide-react';
+import {
+  CircleDollarSign,
+  FileText,
+  ScrollText,
+  Settings,
+  ShieldCheck,
+  TrendingUp,
+  UserCheck,
+  Users,
+} from 'lucide-react';
 import { useServerActionQuery } from '../_lib/hooks/server-action-hooks';
 
 export default function DashboardPage() {
@@ -194,7 +203,8 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <p className="text-muted-foreground text-sm">
-                Consulte saldos e acrescente ou remova créditos com histórico de cada ajuste.
+                Consulte saldos e acrescente ou remova créditos com histórico de
+                cada ajuste.
               </p>
               <Button asChild>
                 <Link href="/dashboard/credits">Gerenciar créditos</Link>
@@ -211,10 +221,29 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <p className="text-muted-foreground text-sm">
-                Consulte os eventos administrativos e falhas relevantes do sistema.
+                Consulte os eventos administrativos e falhas relevantes do
+                sistema.
               </p>
               <Button asChild variant="outline">
                 <Link href="/dashboard/logs">Abrir logs</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-blue-700" />
+                Administradores
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <p className="text-muted-foreground text-sm">
+                Crie acessos administrativos separados, redefina senhas e
+                desative contas quando necessário.
+              </p>
+              <Button asChild variant="outline">
+                <Link href="/dashboard/admins">Gerenciar administradores</Link>
               </Button>
             </CardContent>
           </Card>

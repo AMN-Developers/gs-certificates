@@ -143,6 +143,14 @@ export default function DashboardDocsPage() {
               horas. Sair no cabeçalho encerra somente a sessão administrativa.
             </p>
             <p>
+              O primeiro proprietário é criado automaticamente a partir das
+              variáveis iniciais. Depois disso, o proprietário usa
+              <strong> Administradores</strong> para criar contas individuais,
+              redefinir senhas temporárias ou desativar acessos. Cada
+              administrador pode alterar a própria senha em
+              <strong> Minha senha</strong>.
+            </p>
+            <p>
               Acesso administrativo, alteração de créditos e consulta de logs
               são validados no servidor. A tela não é uma autorização por si só.
             </p>
@@ -342,13 +350,15 @@ export default function DashboardDocsPage() {
             </h3>
             <pre className={codeClass}>
               {
-                'DATABASE_URL=postgresql://...\\nJWT_SECRET=segredo-compartilhado-com-a-gs\\nADMIN_USERNAME=usuario-do-dashboard\\nADMIN_PASSWORD_SCRYPT=hash-scrypt-da-senha\\nADMIN_SESSION_SECRET=segredo-aleatorio-com-32-ou-mais-caracteres'
+                'DATABASE_URL=postgresql://...\\nJWT_SECRET=segredo-compartilhado-com-a-gs\\nADMIN_USERNAME=proprietario-inicial\\nADMIN_PASSWORD_SCRYPT=hash-inicial\\nADMIN_SESSION_SECRET=segredo-aleatorio-com-32-ou-mais-caracteres'
               }
             </pre>
             <p>
               Nunca envie ou registre essas variáveis em chat, planilha, commit
               ou log. Em produção, configure-as diretamente no gerenciador de
-              ambiente do servidor.
+              ambiente do servidor. Após o primeiro login, as contas adicionais
+              e suas senhas ficam no banco administrativo; as variáveis iniciais
+              continuam apenas como bootstrap de emergência.
             </p>
           </Section>
 

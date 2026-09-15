@@ -91,7 +91,9 @@ export const systemLogs = pgTable(
       .default('operational'),
     event: varchar('event', { length: 150 }).notNull(),
     correlationId: varchar('correlation_id', { length: 36 }).notNull(),
-    actorType: varchar('actor_type', { length: 30 }).notNull().default('system'),
+    actorType: varchar('actor_type', { length: 30 })
+      .notNull()
+      .default('system'),
     actorId: integer('actor_id'),
     actorLabel: varchar('actor_label', { length: 100 }),
     resourceType: varchar('resource_type', { length: 80 }),
@@ -115,6 +117,35 @@ export const systemLogs = pgTable(
       table.category,
       table.createdAt,
     ),
+  }),
+);
+
+export const adminUsers = pgTable(
+  'admin_users',
+  {
+    id: serial('id').primaryKey().notNull(),
+    username: varchar('username', { length: 80 }).notNull(),
+    passwordHash: varchar('password_hash', { length: 512 }).notNull(),
+    role: varchar('role', { length: 20 }).notNull().default('admin'),
+    active: boolean('active').notNull().default(true),
+    mustChangePassword: boolean('must_change_password').notNull().default(true),
+    lastLoginAt: timestamp('last_login_at', { precision: 3, mode: 'date' }),
+    passwordChangedAt: timestamp('password_changed_at', {
+      precision: 3,
+      mode: 'date',
+    })
+      .notNull()
+      .defaultNow(),
+    createdAt: timestamp('created_at', { precision: 3, mode: 'date' })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', { precision: 3, mode: 'date' })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    usernameUnique: unique().on(table.username),
+    activeIdx: index('admin_users_active_idx').on(table.active),
   }),
 );
 

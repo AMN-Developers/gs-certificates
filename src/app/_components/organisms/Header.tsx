@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@components/ui/button';
-import { BarChart3, BookOpen, FileText, LogOut } from 'lucide-react';
+import { BarChart3, BookOpen, FileText, KeyRound, LogOut } from 'lucide-react';
 import { useServerActionQuery } from '@lib/hooks/server-action-hooks';
 import { getSessionAccess } from '@/app/action';
 
@@ -83,6 +83,18 @@ export default function Header() {
               >
                 <BookOpen className="h-4 w-4" />
                 Docs
+              </Button>
+            </Link>
+            <Link href="/dashboard/account">
+              <Button
+                variant={
+                  pathname === '/dashboard/account' ? 'default' : 'ghost'
+                }
+                size="sm"
+                className="flex items-center gap-2 text-white hover:bg-white/10"
+              >
+                <KeyRound className="h-4 w-4" />
+                Minha senha
               </Button>
             </Link>
             <Button

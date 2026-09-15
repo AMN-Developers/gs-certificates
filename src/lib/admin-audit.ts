@@ -8,6 +8,7 @@ type AuditInput = {
   category?: 'authentication' | 'credits' | 'operational';
   event: string;
   actorType?: 'admin' | 'system';
+  actorId?: number | null;
   actorLabel?: string | null;
   resourceType?: string | null;
   resourceId?: string | null;
@@ -26,6 +27,7 @@ export async function writeAdminAudit(input: AuditInput) {
       event: input.event,
       correlationId: randomUUID(),
       actorType: input.actorType ?? 'system',
+      actorId: input.actorId ?? null,
       actorLabel: input.actorLabel ?? null,
       resourceType: input.resourceType ?? null,
       resourceId: input.resourceId ?? null,
