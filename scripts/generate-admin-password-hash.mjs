@@ -1,8 +1,11 @@
 import { randomBytes, scryptSync } from 'node:crypto';
 
 const password = process.env.ADMIN_PASSWORD_TEMP;
+
 if (!password || password.length < 12) {
-  console.error('Defina ADMIN_PASSWORD_TEMP com uma senha de pelo menos 12 caracteres.');
+  console.error(
+    'Defina ADMIN_PASSWORD_TEMP com uma senha de pelo menos 12 caracteres.',
+  );
   process.exit(1);
 }
 
@@ -14,7 +17,15 @@ const hash = scryptSync(password, salt, 64, {
   maxmem: 64 * 1024 * 1024,
 });
 
-// Next.js expands unescaped "$" in .env.local. Emit a value that can be copied
-// directly into ADMIN_PASSWORD_SCRYPT without altering the Scrypt payload.
-const encoded = `scrypt$16384$8$1$${salt.toString('base64')}$${hash.toString('base64')}`;
-console.log(encoded.replaceAll('$', '\\$'));
+// Base64URL + pontos: seguro para .env.local, Vercel e cPanel.
+console.log(
+  [
+    'scrypt',
+    'v1',
+    '16384',
+    '8',
+    '1',
+    salt.toString('base64url'),
+    hash.toString('base64url'),
+  ].join('.'),
+);

@@ -3,11 +3,10 @@ import { scryptSync, timingSafeEqual } from 'node:crypto';
 
 const password = process.env.ADMIN_PASSWORD_TEMP;
 const file = readFileSync('.env.local', 'utf8');
-const line = file.split(/\r?\n/).find((item) => item.startsWith('ADMIN_PASSWORD_SCRYPT='));
-// The generator escapes "$" for .env.local because Next.js expands variables
-// in environment files. Decode it here so this local check validates the same
-// value received by the application at runtime.
-const encoded = line?.slice('ADMIN_PASSWORD_SCRYPT='.length).trim().replaceAll('\\$', '$');
+const line = file
+  .split(/\r?\n/)
+  .find((item) => item.startsWith('ADMIN_PASSWORD_SCRYPT='));
+const encoded = line?.slice('ADMIN_PASSWORD_SCRYPT='.length).trim();
 
 if (!password || !encoded) {
   console.error('Senha temporária ou ADMIN_PASSWORD_SCRYPT não encontrado.');
@@ -15,12 +14,28 @@ if (!password || !encoded) {
 }
 
 try {
-  const [algorithm, n, r, p, saltValue, expectedValue] = encoded.split('$');
-  const expected = Buffer.from(expectedValue || '', 'base64');
-  const actual = scryptSync(password, Buffer.from(saltValue || '', 'base64'), 64, {
-    N: Number(n), r: Number(r), p: Number(p), maxmem: 64 * 1024 * 1024,
+  const normalized = encoded.replaceAll('\\$', '$');
+  const versioned = normalized.startsWith('scrypt.v1.');
+  const parts = versioned ? normalized.split('.') : normalized.split('$');
+  const n = versioned ? parts[2] : parts[1];
+  const r = versioned ? parts[3] : parts[2];
+  const p = versioned ? parts[4] : parts[3];
+  const salt = versioned ? parts[5] : parts[4];
+  const expectedValue = versioned ? parts[6] : parts[5];
+  const encoding = versioned ? 'base64url' : 'base64';
+  const expected = Buffer.from(expectedValue || '', encoding);
+  const actual = scryptSync(password, Buffer.from(salt || '', encoding), 64, {
+    N: Number(n),
+    r: Number(r),
+    p: Number(p),
+    maxmem: 64 * 1024 * 1024,
   });
-  if (algorithm === 'scrypt' && expected.length === 64 && timingSafeEqual(actual, expected)) {
+
+  if (
+    parts[0] === 'scrypt' &&
+    expected.length === 64 &&
+    timingSafeEqual(actual, expected)
+  ) {
     console.log('HASH_OK');
   } else {
     console.log('HASH_INVALID');
