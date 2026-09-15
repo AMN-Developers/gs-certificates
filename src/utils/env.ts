@@ -11,7 +11,6 @@ const storageModeOverrideSchema = z
 const envSchema = z.object({
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string(),
-  ADMIN_USER_ID: z.coerce.number().int().positive().optional(),
   ADMIN_USERNAME: z.string().trim().min(1).optional(),
   ADMIN_PASSWORD_SCRYPT: z.string().trim().min(1).optional(),
   ADMIN_SESSION_SECRET: z.string().min(32).optional(),
