@@ -1,12 +1,12 @@
-import { and, asc, eq, ne } from 'drizzle-orm';
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { requireSystemOwnerAdmin } from '@/app/dashboard/_admin-auth';
-import { createAdminPasswordHash } from '@/lib/admin-auth';
-import { writeAdminAudit } from '@/lib/admin-audit';
-import { createAdminUser } from '@/lib/admin-users';
-import { db } from '@/lib/db';
-import { adminUsers } from '@/lib/db/schema';
+import { and, asc, eq, ne } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { requireSystemOwnerAdmin } from "@/app/dashboard/_admin-auth";
+import { createAdminPasswordHash } from "@/lib/admin-auth";
+import { writeAdminAudit } from "@/lib/admin-audit";
+import { createAdminUser } from "@/lib/admin-users";
+import { db } from "@/lib/db";
+import { adminUsers } from "@/lib/db/schema";
 
 const createSchema = z.object({
   username: z
@@ -19,13 +19,19 @@ const createSchema = z.object({
 
 const updateSchema = z.object({
   id: z.number().int().positive(),
-  action: z.enum(['reset_password', 'set_active']),
+  action: z.enum(["reset_password", "set_active"]),
   password: z.string().min(12).max(256).optional(),
   active: z.boolean().optional(),
 });
 
 function sameOrigin(request: NextRequest) {
-  return request.headers.get('origin') === request.nextUrl.origin;
+  const origin = request.headers.get("origin");
+  const publicOrigin = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+
+  return (
+    Boolean(origin) &&
+    (origin === request.nextUrl.origin || origin === publicOrigin)
+  );
 }
 
 export async function GET() {
@@ -33,7 +39,7 @@ export async function GET() {
 
   if (!owner) {
     return NextResponse.json(
-      { error: 'Acesso de proprietário necessário.' },
+      { error: "Acesso de proprietário necessário." },
       { status: 403 },
     );
   }
@@ -57,7 +63,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   if (!sameOrigin(request)) {
     return NextResponse.json(
-      { error: 'Origem não autorizada.' },
+      { error: "Origem não autorizada." },
       { status: 403 },
     );
   }
@@ -66,7 +72,7 @@ export async function POST(request: NextRequest) {
 
   if (!owner) {
     return NextResponse.json(
-      { error: 'Acesso de proprietário necessário.' },
+      { error: "Acesso de proprietário necessário." },
       { status: 403 },
     );
   }
@@ -77,7 +83,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error:
-          'Informe um usuário válido e uma senha temporária de ao menos 12 caracteres.',
+          "Informe um usuário válido e uma senha temporária de ao menos 12 caracteres.",
       },
       { status: 400 },
     );
@@ -87,12 +93,12 @@ export async function POST(request: NextRequest) {
     const admin = await createAdminUser(parsed.data);
 
     await writeAdminAudit({
-      category: 'authentication',
-      event: 'admin.user.created',
-      actorType: 'admin',
+      category: "authentication",
+      event: "admin.user.created",
+      actorType: "admin",
       actorId: owner.id,
       actorLabel: owner.actor,
-      resourceType: 'admin_user',
+      resourceType: "admin_user",
       resourceId: String(admin.id),
       details: { username: admin.username },
     });
@@ -109,9 +115,9 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
-    if (error instanceof Error && error.message.includes('unique')) {
+    if (error instanceof Error && error.message.includes("unique")) {
       return NextResponse.json(
-        { error: 'Esse usuário administrativo já existe.' },
+        { error: "Esse usuário administrativo já existe." },
         { status: 409 },
       );
     }
@@ -123,7 +129,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   if (!sameOrigin(request)) {
     return NextResponse.json(
-      { error: 'Origem não autorizada.' },
+      { error: "Origem não autorizada." },
       { status: 403 },
     );
   }
@@ -132,7 +138,7 @@ export async function PATCH(request: NextRequest) {
 
   if (!owner) {
     return NextResponse.json(
-      { error: 'Acesso de proprietário necessário.' },
+      { error: "Acesso de proprietário necessário." },
       { status: 403 },
     );
   }
@@ -140,7 +146,7 @@ export async function PATCH(request: NextRequest) {
   const parsed = updateSchema.safeParse(await request.json().catch(() => null));
 
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Dados inválidos.' }, { status: 400 });
+    return NextResponse.json({ error: "Dados inválidos." }, { status: 400 });
   }
 
   const input = parsed.data;
@@ -152,22 +158,22 @@ export async function PATCH(request: NextRequest) {
 
   if (!target) {
     return NextResponse.json(
-      { error: 'Administrador não encontrado.' },
+      { error: "Administrador não encontrado." },
       { status: 404 },
     );
   }
 
   if (target.id === owner.id) {
     return NextResponse.json(
-      { error: 'Use “Minha senha” para alterar a sua própria conta.' },
+      { error: "Use “Minha senha” para alterar a sua própria conta." },
       { status: 422 },
     );
   }
 
-  if (input.action === 'reset_password') {
+  if (input.action === "reset_password") {
     if (!input.password) {
       return NextResponse.json(
-        { error: 'Informe uma senha temporária de ao menos 12 caracteres.' },
+        { error: "Informe uma senha temporária de ao menos 12 caracteres." },
         { status: 400 },
       );
     }
@@ -183,10 +189,10 @@ export async function PATCH(request: NextRequest) {
       .where(eq(adminUsers.id, target.id));
   }
 
-  if (input.action === 'set_active') {
-    if (typeof input.active !== 'boolean') {
+  if (input.action === "set_active") {
+    if (typeof input.active !== "boolean") {
       return NextResponse.json(
-        { error: 'Informe o novo status da conta.' },
+        { error: "Informe o novo status da conta." },
         { status: 400 },
       );
     }
@@ -198,17 +204,17 @@ export async function PATCH(request: NextRequest) {
   }
 
   await writeAdminAudit({
-    category: 'authentication',
+    category: "authentication",
     event:
-      input.action === 'reset_password'
-        ? 'admin.user.password_reset'
+      input.action === "reset_password"
+        ? "admin.user.password_reset"
         : input.active
-          ? 'admin.user.activated'
-          : 'admin.user.deactivated',
-    actorType: 'admin',
+          ? "admin.user.activated"
+          : "admin.user.deactivated",
+    actorType: "admin",
     actorId: owner.id,
     actorLabel: owner.actor,
-    resourceType: 'admin_user',
+    resourceType: "admin_user",
     resourceId: String(target.id),
     details: { username: target.username },
   });

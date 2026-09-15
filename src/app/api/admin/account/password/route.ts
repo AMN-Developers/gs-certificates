@@ -1,21 +1,31 @@
-import { eq } from 'drizzle-orm';
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { resolveDashboardAdminContext } from '@/app/dashboard/_admin-auth';
-import { createAdminPasswordHash, verifyAdminPassword } from '@/lib/admin-auth';
-import { writeAdminAudit } from '@/lib/admin-audit';
-import { db } from '@/lib/db';
-import { adminUsers } from '@/lib/db/schema';
+import { eq } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { resolveDashboardAdminContext } from "@/app/dashboard/_admin-auth";
+import { createAdminPasswordHash, verifyAdminPassword } from "@/lib/admin-auth";
+import { writeAdminAudit } from "@/lib/admin-audit";
+import { db } from "@/lib/db";
+import { adminUsers } from "@/lib/db/schema";
 
 const schema = z.object({
   currentPassword: z.string().min(1).max(256),
   newPassword: z.string().min(12).max(256),
 });
 
+function sameOrigin(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  const publicOrigin = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+
+  return (
+    Boolean(origin) &&
+    (origin === request.nextUrl.origin || origin === publicOrigin)
+  );
+}
+
 export async function POST(request: NextRequest) {
-  if (request.headers.get('origin') !== request.nextUrl.origin) {
+  if (!sameOrigin(request)) {
     return NextResponse.json(
-      { error: 'Origem não autorizada.' },
+      { error: "Origem não autorizada." },
       { status: 403 },
     );
   }
@@ -24,7 +34,7 @@ export async function POST(request: NextRequest) {
 
   if (!admin) {
     return NextResponse.json(
-      { error: 'Acesso administrativo necessário.' },
+      { error: "Acesso administrativo necessário." },
       { status: 401 },
     );
   }
@@ -33,7 +43,7 @@ export async function POST(request: NextRequest) {
 
   if (!parsed.success) {
     return NextResponse.json(
-      { error: 'A nova senha deve ter ao menos 12 caracteres.' },
+      { error: "A nova senha deve ter ao menos 12 caracteres." },
       { status: 400 },
     );
   }
@@ -49,7 +59,7 @@ export async function POST(request: NextRequest) {
     !verifyAdminPassword(parsed.data.currentPassword, current.passwordHash)
   ) {
     return NextResponse.json(
-      { error: 'Senha atual inválida.' },
+      { error: "Senha atual inválida." },
       { status: 401 },
     );
   }
@@ -65,12 +75,12 @@ export async function POST(request: NextRequest) {
     .where(eq(adminUsers.id, admin.id));
 
   await writeAdminAudit({
-    category: 'authentication',
-    event: 'admin.password.changed',
-    actorType: 'admin',
+    category: "authentication",
+    event: "admin.password.changed",
+    actorType: "admin",
     actorId: admin.id,
     actorLabel: admin.actor,
-    resourceType: 'admin_user',
+    resourceType: "admin_user",
     resourceId: String(admin.id),
   });
 

@@ -1,17 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { and, desc, eq, sql } from 'drizzle-orm';
-import { z } from 'zod';
-import { resolveDashboardAdminContext } from '@/app/dashboard/_admin-auth';
-import { db } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { and, desc, eq, sql } from "drizzle-orm";
+import { z } from "zod";
+import { resolveDashboardAdminContext } from "@/app/dashboard/_admin-auth";
+import { db } from "@/lib/db";
 import {
   systemLogs,
   tokenAdjustments,
   tokenBalance,
   users,
-} from '@/lib/db/schema';
-import { removeExpiredAdminLogs, writeAdminAudit } from '@/lib/admin-audit';
+} from "@/lib/db/schema";
+import { removeExpiredAdminLogs, writeAdminAudit } from "@/lib/admin-audit";
 
-const certificateTypes = ['higienizacao', 'impermeabilizacao'] as const;
+const certificateTypes = ["higienizacao", "impermeabilizacao"] as const;
 
 const querySchema = z.object({
   userId: z.coerce.number().int().positive(),
@@ -20,15 +20,25 @@ const querySchema = z.object({
 const adjustmentSchema = z.object({
   userId: z.number().int().positive(),
   type: z.enum(certificateTypes),
-  operation: z.enum(['add', 'remove']),
+  operation: z.enum(["add", "remove"]),
   amount: z.number().int().min(1).max(10000),
   reason: z.string().trim().min(3).max(300),
 });
 
 function unauthorized() {
   return NextResponse.json(
-    { error: 'Acesso administrativo necessário.' },
+    { error: "Acesso administrativo necessário." },
     { status: 401 },
+  );
+}
+
+function sameOrigin(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  const publicOrigin = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+
+  return (
+    Boolean(origin) &&
+    (origin === request.nextUrl.origin || origin === publicOrigin)
   );
 }
 
@@ -37,11 +47,11 @@ export async function GET(request: NextRequest) {
   if (!admin) return unauthorized();
 
   const parsed = querySchema.safeParse({
-    userId: request.nextUrl.searchParams.get('userId'),
+    userId: request.nextUrl.searchParams.get("userId"),
   });
   if (!parsed.success) {
     return NextResponse.json(
-      { error: 'Informe um código de cliente válido.' },
+      { error: "Informe um código de cliente válido." },
       { status: 400 },
     );
   }
@@ -54,7 +64,7 @@ export async function GET(request: NextRequest) {
     .limit(1);
   if (!user)
     return NextResponse.json(
-      { error: 'Cliente não encontrado.' },
+      { error: "Cliente não encontrado." },
       { status: 404 },
     );
 
@@ -84,9 +94,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (request.headers.get('origin') !== request.nextUrl.origin) {
+  if (!sameOrigin(request)) {
     return NextResponse.json(
-      { error: 'Origem não autorizada.' },
+      { error: "Origem não autorizada." },
       { status: 403 },
     );
   }
@@ -99,18 +109,18 @@ export async function POST(request: NextRequest) {
   );
   if (!parsed.success) {
     return NextResponse.json(
-      { error: 'Dados do ajuste inválidos.' },
+      { error: "Dados do ajuste inválidos." },
       { status: 400 },
     );
   }
 
   const input = parsed.data;
-  const signedAmount = input.operation === 'add' ? input.amount : -input.amount;
+  const signedAmount = input.operation === "add" ? input.amount : -input.amount;
 
   try {
     const adjustment = await db.transaction(async (transaction) => {
       // Serializes adjustments for the same client/type and prevents lost updates.
-      const lockType = input.type === 'higienizacao' ? 1 : 2;
+      const lockType = input.type === "higienizacao" ? 1 : 2;
       await transaction.execute(
         sql`SELECT pg_advisory_xact_lock(${input.userId}, ${lockType})`,
       );
@@ -120,7 +130,7 @@ export async function POST(request: NextRequest) {
         .from(users)
         .where(eq(users.id, input.userId))
         .limit(1);
-      if (!user) throw new Error('CLIENT_NOT_FOUND');
+      if (!user) throw new Error("CLIENT_NOT_FOUND");
 
       const [current] = await transaction
         .select({ balance: tokenBalance.balance })
@@ -135,7 +145,7 @@ export async function POST(request: NextRequest) {
 
       const balanceBefore = current?.balance ?? 0;
       const balanceAfter = balanceBefore + signedAmount;
-      if (balanceAfter < 0) throw new Error('NEGATIVE_BALANCE');
+      if (balanceAfter < 0) throw new Error("NEGATIVE_BALANCE");
 
       if (current) {
         await transaction
@@ -169,14 +179,14 @@ export async function POST(request: NextRequest) {
         .returning();
 
       await transaction.insert(systemLogs).values({
-        level: 'info',
-        category: 'credits',
-        event: 'credits.adjusted',
+        level: "info",
+        category: "credits",
+        event: "credits.adjusted",
         correlationId: crypto.randomUUID(),
-        actorType: 'admin',
+        actorType: "admin",
         actorId: admin.id,
         actorLabel: admin.actor,
-        resourceType: 'user',
+        resourceType: "user",
         resourceId: String(input.userId),
         details: {
           type: input.type,
@@ -197,27 +207,27 @@ export async function POST(request: NextRequest) {
     await removeExpiredAdminLogs();
     return NextResponse.json({ adjustment });
   } catch (error) {
-    const code = error instanceof Error ? error.message : 'UNKNOWN';
-    if (code === 'CLIENT_NOT_FOUND') {
+    const code = error instanceof Error ? error.message : "UNKNOWN";
+    if (code === "CLIENT_NOT_FOUND") {
       return NextResponse.json(
-        { error: 'Cliente não encontrado.' },
+        { error: "Cliente não encontrado." },
         { status: 404 },
       );
     }
-    if (code === 'NEGATIVE_BALANCE') {
+    if (code === "NEGATIVE_BALANCE") {
       return NextResponse.json(
-        { error: 'O saldo não pode ficar negativo.' },
+        { error: "O saldo não pode ficar negativo." },
         { status: 422 },
       );
     }
     await writeAdminAudit({
-      level: 'error',
-      category: 'credits',
-      event: 'credits.adjustment_failed',
-      actorType: 'admin',
+      level: "error",
+      category: "credits",
+      event: "credits.adjustment_failed",
+      actorType: "admin",
       actorId: admin.id,
       actorLabel: admin.actor,
-      resourceType: 'user',
+      resourceType: "user",
       resourceId: String(input.userId),
       details: {
         type: input.type,
@@ -225,9 +235,9 @@ export async function POST(request: NextRequest) {
         amount: signedAmount,
       },
     });
-    console.error('Unable to adjust certificate credits', error);
+    console.error("Unable to adjust certificate credits", error);
     return NextResponse.json(
-      { error: 'Não foi possível ajustar os créditos.' },
+      { error: "Não foi possível ajustar os créditos." },
       { status: 500 },
     );
   }
