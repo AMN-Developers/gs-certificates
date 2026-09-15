@@ -1,5 +1,0 @@
-allowBuilds:
-  '@prisma/client': false
-  esbuild: true
-  puppeteer: true
-  unrs-resolver: true

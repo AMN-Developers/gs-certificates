@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
@@ -43,7 +42,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@components/ui/select';
-import { OperationLoadingOverlay } from '@components/ui/operation-loading-overlay';
 
 export default function CreateCertificateForm({
   type,
@@ -53,23 +51,17 @@ export default function CreateCertificateForm({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const [isGenerating, setIsGenerating] = useState(false);
   const form = useForm<z.infer<typeof createCertificateSchema>>({
     mode: 'all',
     resolver: zodResolver(createCertificateSchema),
     defaultValues: {
       type,
       product: null,
-      clientName: '',
-      companyName: '',
-      technichalResponsible: '',
-      date: undefined,
     },
   });
 
   const { execute, isPending } = useServerAction(createCertificate, {
     onError: ({ err }) => {
-      setIsGenerating(false);
       toast({
         title: 'Erro ao criar certificado',
         description: err.message,
@@ -84,14 +76,12 @@ export default function CreateCertificateForm({
       router.push(`/certificados/${data.certificateToken}`);
     },
   });
-  const isSubmitting = isPending || isGenerating;
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((values) => {
-          setIsGenerating(true);
-          window.requestAnimationFrame(() => execute(values));
+          execute(values);
         })}
         className="space-y-6"
       >
@@ -111,10 +101,9 @@ export default function CreateCertificateForm({
                     </div>
                     <Input
                       {...field}
-                      value={field.value ?? ''}
                       className="pl-10"
                       placeholder="Digite o nome do cliente..."
-                      disabled={isSubmitting}
+                      disabled={isPending}
                     />
                   </div>
                 </FormControl>
@@ -140,7 +129,7 @@ export default function CreateCertificateForm({
                           'flex w-full items-center justify-start gap-2 font-normal',
                           !field.value && 'text-muted-foreground',
                         )}
-                        disabled={isSubmitting}
+                        disabled={isPending}
                       >
                         <CalendarIcon className="h-5 w-5 opacity-50" />
                         {field.value ? (
@@ -191,10 +180,9 @@ export default function CreateCertificateForm({
                     </div>
                     <Input
                       {...field}
-                      value={field.value ?? ''}
                       className="pl-10"
                       placeholder="Digite o nome da empresa..."
-                      disabled={isSubmitting}
+                      disabled={isPending}
                     />
                   </div>
                 </FormControl>
@@ -218,10 +206,9 @@ export default function CreateCertificateForm({
                     </div>
                     <Input
                       {...field}
-                      value={field.value ?? ''}
                       className="pl-10"
                       placeholder="Digite o nome do técnico..."
-                      disabled={isSubmitting}
+                      disabled={isPending}
                     />
                   </div>
                 </FormControl>
@@ -243,7 +230,7 @@ export default function CreateCertificateForm({
                     onValueChange={field.onChange}
                     value={field.value || undefined}
                     defaultValue={(field.value as string) || undefined}
-                    disabled={isSubmitting}
+                    disabled={isPending}
                   >
                     <FormControl>
                       <div className="relative">
@@ -276,9 +263,9 @@ export default function CreateCertificateForm({
           <Button
             type="submit"
             className="relative overflow-hidden bg-brand text-white hover:bg-brand/90"
-            disabled={isSubmitting}
+            disabled={isPending}
           >
-            {isSubmitting ? (
+            {isPending ? (
               <div className="flex items-center gap-2">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 <span>Gerando certificado...</span>
@@ -289,12 +276,6 @@ export default function CreateCertificateForm({
           </Button>
         </div>
       </form>
-      {isSubmitting && (
-        <OperationLoadingOverlay
-          title="Gerando certificado"
-          description="Seu certificado está sendo criado. Isso pode levar alguns segundos; não feche esta tela."
-        />
-      )}
     </Form>
   );
 }

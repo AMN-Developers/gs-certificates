@@ -33,7 +33,6 @@ export default function Home() {
   const form = useForm<z.infer<typeof loginByClientIdSchema>>({
     mode: 'onChange',
     resolver: zodResolver(loginByClientIdSchema),
-    defaultValues: { clientId: '' },
   });
 
   const { execute, isPending } = useServerAction(loginByClientId, {
@@ -113,7 +112,6 @@ export default function Home() {
                           </div>
                           <Input
                             {...field}
-                            value={field.value ?? ''}
                             type="number"
                             className="block w-full rounded-lg border-gray-300 pl-10 [appearance:textfield] focus:border-brand focus:ring-brand sm:text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                             placeholder="Digite seu código..."

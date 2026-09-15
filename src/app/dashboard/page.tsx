@@ -5,26 +5,13 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card';
 import { Button } from '@components/ui/button';
 import { Skeleton } from '@components/ui/skeleton';
-import {
-  CircleDollarSign,
-  FileText,
-  ScrollText,
-  ShieldCheck,
-  TrendingUp,
-  UserCheck,
-  Users,
-} from 'lucide-react';
+import { FileText, Users, UserCheck, TrendingUp, Settings } from 'lucide-react';
 import { useServerActionQuery } from '../_lib/hooks/server-action-hooks';
-import { getSessionAccess } from '../action';
 
 export default function DashboardPage() {
   const { isLoading, data: stats } = useServerActionQuery(getDashboardStats, {
     input: undefined,
     queryKey: ['getDashboardStats'],
-  });
-  const { data: sessionAccess } = useServerActionQuery(getSessionAccess, {
-    input: undefined,
-    queryKey: ['getSessionAccess'],
   });
 
   const StatCard = ({
@@ -178,69 +165,25 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/*
-            Gestão de tipos e templates temporariamente fora da interface.
-            A rota e os componentes foram preservados para a evolução
-            Certificados 2.0, sem qualquer impacto na emissão atual.
-          */}
-
           <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <CircleDollarSign className="h-5 w-5 text-emerald-700" />
-                Créditos de certificados
+                <Settings className="h-5 w-5 text-slate-700" />
+                Administracao de tipos e templates
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <p className="text-muted-foreground text-sm">
-                Consulte saldos e acrescente ou remova créditos com histórico de
-                cada ajuste.
+                Gerencie certificate types, upload/substituicao de templates e
+                compatibilidade de armazenamento.
               </p>
               <Button asChild>
-                <Link href="/dashboard/credits">Gerenciar créditos</Link>
+                <Link href="/dashboard/certificate-types">
+                  Abrir gestao de templates
+                </Link>
               </Button>
             </CardContent>
           </Card>
-
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ScrollText className="h-5 w-5 text-slate-700" />
-                Auditoria administrativa
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <p className="text-muted-foreground text-sm">
-                Consulte os eventos administrativos e falhas relevantes do
-                sistema.
-              </p>
-              <Button asChild variant="outline">
-                <Link href="/dashboard/logs">Abrir logs</Link>
-              </Button>
-            </CardContent>
-          </Card>
-
-          {sessionAccess?.canManageAdministrators && (
-            <Card className="md:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ShieldCheck className="h-5 w-5 text-blue-700" />
-                  Administradores
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <p className="text-muted-foreground text-sm">
-                  Crie acessos administrativos separados, redefina senhas e
-                  desative contas quando necessário.
-                </p>
-                <Button asChild variant="outline">
-                  <Link href="/dashboard/admins">
-                    Gerenciar administradores
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          )}
         </div>
       )}
     </div>

@@ -4,7 +4,7 @@ import { createServerAction } from 'zsa';
 import { z } from 'zod';
 import { UsersService } from '@/services/usersService';
 import { cookies } from 'next/headers';
-import { resolveDashboardAdminContext } from './dashboard/_admin-auth';
+import { env } from '@/utils/env';
 
 export const loginByClientId = createServerAction()
   .input(
@@ -23,7 +23,7 @@ export const loginByClientId = createServerAction()
       throw new Error('Error logging in user');
     }
 
-    (await cookies()).set('token', token, {
+    cookies().set('token', token, {
       httpOnly: true,
     });
 
@@ -33,8 +33,8 @@ export const loginByClientId = createServerAction()
     };
   });
 
-export const logout = createServerAction().handler(async () => {
-  (await cookies()).set('token', '', {
+export const logout = createServerAction().handler(() => {
+  cookies().set('token', '', {
     httpOnly: true,
   });
 
@@ -44,21 +44,12 @@ export const logout = createServerAction().handler(async () => {
 });
 
 export const getSessionAccess = createServerAction().handler(async () => {
-  const admin = await resolveDashboardAdminContext();
-  const isAdmin = !!admin;
-  const canManageAdministrators =
-    admin?.role === 'owner' && admin.actor === 'gsadmin';
-  const adminUsername = admin?.actor ?? null;
-  const adminRole = admin?.role ?? null;
-  const token = (await cookies()).get('token')?.value;
+  const token = cookies().get('token')?.value;
 
   if (!token) {
     return {
       isAuthenticated: false,
-      isAdmin,
-      canManageAdministrators,
-      adminUsername,
-      adminRole,
+      isAdmin: false,
     };
   }
 
@@ -68,18 +59,12 @@ export const getSessionAccess = createServerAction().handler(async () => {
   if (!user) {
     return {
       isAuthenticated: false,
-      isAdmin,
-      canManageAdministrators,
-      adminUsername,
-      adminRole,
+      isAdmin: false,
     };
   }
 
   return {
     isAuthenticated: true,
-    isAdmin,
-    canManageAdministrators,
-    adminUsername,
-    adminRole,
+    isAdmin: user.id === env.ADMIN_USER_ID,
   };
 });

@@ -6,7 +6,7 @@ import { createServerActionProcedure } from 'zsa';
 
 export const authenticatedProcedure = createServerActionProcedure().handler(
   async () => {
-    const token = (await cookies()).get('token')?.value;
+    const token = cookies().get('token')?.value;
 
     if (!token) {
       throw new Error('Não autorizado!');
