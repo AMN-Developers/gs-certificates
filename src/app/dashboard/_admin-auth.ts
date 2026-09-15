@@ -66,3 +66,13 @@ export async function requireOwnerAdmin() {
   const admin = await resolveDashboardAdminContext();
   return admin?.role === 'owner' ? admin : null;
 }
+
+/**
+ * A gestão de acessos é reservada ao proprietário operacional definido para
+ * esta instalação. O papel `owner` continua existindo para preservar o modelo
+ * de dados, mas não concede automaticamente essa função a outra conta.
+ */
+export async function requireSystemOwnerAdmin() {
+  const admin = await requireOwnerAdmin();
+  return admin?.actor === 'gsadmin' ? admin : null;
+}

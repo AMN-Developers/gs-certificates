@@ -9,18 +9,22 @@ import {
   CircleDollarSign,
   FileText,
   ScrollText,
-  Settings,
   ShieldCheck,
   TrendingUp,
   UserCheck,
   Users,
 } from 'lucide-react';
 import { useServerActionQuery } from '../_lib/hooks/server-action-hooks';
+import { getSessionAccess } from '../action';
 
 export default function DashboardPage() {
   const { isLoading, data: stats } = useServerActionQuery(getDashboardStats, {
     input: undefined,
     queryKey: ['getDashboardStats'],
+  });
+  const { data: sessionAccess } = useServerActionQuery(getSessionAccess, {
+    input: undefined,
+    queryKey: ['getSessionAccess'],
   });
 
   const StatCard = ({
@@ -174,25 +178,11 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-slate-700" />
-                Administracao de tipos e templates
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <p className="text-muted-foreground text-sm">
-                Gerencie certificate types, upload/substituicao de templates e
-                compatibilidade de armazenamento.
-              </p>
-              <Button asChild>
-                <Link href="/dashboard/certificate-types">
-                  Abrir gestao de templates
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+          {/*
+            Gestão de tipos e templates temporariamente fora da interface.
+            A rota e os componentes foram preservados para a evolução
+            Certificados 2.0, sem qualquer impacto na emissão atual.
+          */}
 
           <Card className="md:col-span-2">
             <CardHeader>
@@ -230,23 +220,27 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-blue-700" />
-                Administradores
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <p className="text-muted-foreground text-sm">
-                Crie acessos administrativos separados, redefina senhas e
-                desative contas quando necessário.
-              </p>
-              <Button asChild variant="outline">
-                <Link href="/dashboard/admins">Gerenciar administradores</Link>
-              </Button>
-            </CardContent>
-          </Card>
+          {sessionAccess?.canManageAdministrators && (
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-blue-700" />
+                  Administradores
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <p className="text-muted-foreground text-sm">
+                  Crie acessos administrativos separados, redefina senhas e
+                  desative contas quando necessário.
+                </p>
+                <Button asChild variant="outline">
+                  <Link href="/dashboard/admins">
+                    Gerenciar administradores
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
     </div>

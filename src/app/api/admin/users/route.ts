@@ -1,9 +1,7 @@
 import { and, asc, eq, ne } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import {
-  requireOwnerAdmin,
-} from '@/app/dashboard/_admin-auth';
+import { requireSystemOwnerAdmin } from '@/app/dashboard/_admin-auth';
 import { createAdminPasswordHash } from '@/lib/admin-auth';
 import { writeAdminAudit } from '@/lib/admin-audit';
 import { createAdminUser } from '@/lib/admin-users';
@@ -31,7 +29,7 @@ function sameOrigin(request: NextRequest) {
 }
 
 export async function GET() {
-  const owner = await requireOwnerAdmin();
+  const owner = await requireSystemOwnerAdmin();
 
   if (!owner) {
     return NextResponse.json(
@@ -64,7 +62,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const owner = await requireOwnerAdmin();
+  const owner = await requireSystemOwnerAdmin();
 
   if (!owner) {
     return NextResponse.json(
@@ -130,7 +128,7 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const owner = await requireOwnerAdmin();
+  const owner = await requireSystemOwnerAdmin();
 
   if (!owner) {
     return NextResponse.json(

@@ -44,13 +44,17 @@ export const logout = createServerAction().handler(async () => {
 });
 
 export const getSessionAccess = createServerAction().handler(async () => {
-  const isAdmin = !!(await resolveDashboardAdminContext());
+  const admin = await resolveDashboardAdminContext();
+  const isAdmin = !!admin;
+  const canManageAdministrators =
+    admin?.role === 'owner' && admin.actor === 'gsadmin';
   const token = (await cookies()).get('token')?.value;
 
   if (!token) {
     return {
       isAuthenticated: false,
       isAdmin,
+      canManageAdministrators,
     };
   }
 
@@ -67,5 +71,6 @@ export const getSessionAccess = createServerAction().handler(async () => {
   return {
     isAuthenticated: true,
     isAdmin,
+    canManageAdministrators,
   };
 });
