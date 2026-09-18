@@ -1,18 +1,18 @@
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { PDFDocument } from 'pdf-lib';
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { PDFDocument } from "pdf-lib";
 import {
   CERTIFICATE_PDF_FIELDS,
   CERTIFICATE_PDF_TEMPLATE_FILES,
   REQUIRED_PDF_FIELDS_BY_TYPE,
-} from '@/constants/certificate-pdf-fields';
-import type { Products } from '@/dtos/certificate';
-import type { TokenType } from '@/repositories/userRepository';
-import { CertificateTemplatesRepository } from '@/repositories/certificateTemplatesRepository';
-import { CERTIFICATE_MANAGEMENT_ERRORS } from '@/constants/certificate-management';
-import { isLegacyFallbackCutoffReached } from '@/utils/env';
+} from "@/constants/certificate-pdf-fields";
+import type { Products } from "@/dtos/certificate";
+import type { TokenType } from "@/repositories/userRepository";
+import { CertificateTemplatesRepository } from "@/repositories/certificateTemplatesRepository";
+import { CERTIFICATE_MANAGEMENT_ERRORS } from "@/constants/certificate-management";
+import { isLegacyFallbackCutoffReached } from "@/utils/env";
 
 type TGenerateCertificatePdfInput = {
   certificateNumber: string;
@@ -23,6 +23,29 @@ type TGenerateCertificatePdfInput = {
   technichalResponsible: string;
   product: Products;
 };
+
+// The standard font embedded in legacy templates uses the WinAnsi character
+// set. Keep Portuguese/Windows-1252 characters intact and safely reduce any
+// copied Unicode character that the font cannot encode (for example, "ů").
+const WIN_ANSI_CHARACTER =
+  /^[\u0020-\u007e\u00a0-\u00ff\u0152\u0153\u0160\u0161\u0178\u017d\u017e\u0192\u02c6\u02dc\u2013\u2014\u2018-\u201a\u201c-\u201e\u2020\u2021\u2022\u2026\u2030\u2039\u203a\u20ac]$/;
+
+function normalizePdfText(value: string) {
+  return Array.from(value)
+    .map((character) => {
+      if (WIN_ANSI_CHARACTER.test(character)) {
+        return character;
+      }
+
+      const simplified = character.normalize("NFD").replace(/\p{Mark}/gu, "");
+      const fallback = Array.from(simplified)
+        .filter((item) => WIN_ANSI_CHARACTER.test(item))
+        .join("");
+
+      return fallback || "?";
+    })
+    .join("");
+}
 
 export class CertificatePdfService {
   private certificateTemplatesRepository: CertificateTemplatesRepository;
@@ -42,9 +65,9 @@ export class CertificatePdfService {
     }
 
     const normalizedStoragePath = activeTemplateByLegacyType.storagePath
-      .replace(/^\/public\//, '')
-      .replace(/^\//, '');
-    const absolutePath = join(process.cwd(), 'public', normalizedStoragePath);
+      .replace(/^\/public\//, "")
+      .replace(/^\//, "");
+    const absolutePath = join(process.cwd(), "public", normalizedStoragePath);
 
     try {
       return await readFile(absolutePath);
@@ -67,7 +90,7 @@ export class CertificatePdfService {
     }
 
     const templateFileName = CERTIFICATE_PDF_TEMPLATE_FILES[type];
-    const templatePath = join(process.cwd(), 'public', templateFileName);
+    const templatePath = join(process.cwd(), "public", templateFileName);
 
     try {
       return await readFile(templatePath);
@@ -101,20 +124,20 @@ export class CertificatePdfService {
     };
 
     if (fieldName === impermeabilizacaoFields.product) {
-      return input.product || '';
+      return input.product || "";
     }
 
-    return commonFieldValueMap[fieldName] || '';
+    return commonFieldValueMap[fieldName] || "";
   }
 
   private setFieldValueOrFail(
-    form: ReturnType<PDFDocument['getForm']>,
+    form: ReturnType<PDFDocument["getForm"]>,
     fieldName: string,
     value: string,
   ) {
     try {
       const textField = form.getTextField(fieldName);
-      textField.setText(value);
+      textField.setText(normalizePdfText(value));
     } catch {
       throw new Error(`Campo obrigatorio do template ausente: ${fieldName}`);
     }
